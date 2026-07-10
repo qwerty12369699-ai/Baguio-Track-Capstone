@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dragon Treasure Castle | Baguio Track</title>
+
+  <link rel="stylesheet" href="../assets/css/modern.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- LEAFLET GIS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+:root { --header-height: 84px; }
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+  padding-top: var(--header-height);
+}
+a { text-decoration: none; }
+main {
+  max-width: 1200px;
+  margin: 0 auto 36px;
+  padding: 0 24px 32px;
+}
+.page-shell { display: grid; gap: 24px; }
+.hero-card { display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 24px; background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 12px 32px rgba(15,23,42,0.08); }
+.hero-media img { width: 100%; height: 330px; border-radius: 18px; object-fit: cover; cursor: pointer; display: block; }
+.hero-meta { display:flex; flex-direction:column; justify-content:center; gap:12px; }
+.kicker { display:inline-flex; width:max-content; padding:6px 12px; border-radius:999px; background:#eff6ff; color:var(--accent); font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.page-title { font-size:32px; line-height:1.2; color:var(--text-primary); margin:0; }
+.page-subtitle { margin:0; font-size:15px; color:var(--text-secondary); line-height:1.7; }
+.info-list { display:grid; gap:8px; padding-left:18px; margin:0; color:#4b5563;   list-style: none;  list-style: none; }
+    .info-list li { list-style: none; }
+.detail-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:24px; }
+.card { background:rgba(255,255,255,0.96); border:1px solid var(--border); border-radius:20px; padding:22px; box-shadow:0 10px 24px rgba(15,23,42,0.06); }
+.card h3 { margin:0 0 12px; color:var(--text-primary); font-size:18px; }
+.card p,.card li { color:#4b5563; line-height:1.7; }
+.map-frame { height:340px; border-radius:16px; overflow:hidden; border:1px solid var(--border); }
+#realMap { width:100%; height:100%; }
+.back-link { display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:10px 14px; background:var(--accent); color:#fff !important; border-radius:10px; font-weight:600; }
+.back-link:hover { background:var(--accent-light); }
+@media (max-width: 900px) { body { padding-top: 112px; } .hero-card, .detail-grid { grid-template-columns: 1fr; } .hero-media img { height: 260px; } }
+</style>
+</head>
+
+<body>
+
+<header id="mainHeader">
+  <div class="header-container">
+    <a href="home.html" class="logo-area">
+      <img src="../assets/images/loggo.png" alt="Baguio Track Logo">
+      <h2>Baguio Track</h2>
+    </a>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="tourist.html" class="active">Tourist Spots</a>
+      <a href="jeepterminal.html">Terminals</a>
+      <div class="nav-profile">
+        <button class="nav-profile-btn" id="profileBtn">Profile</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-shell">
+    <section class="hero-card">
+      <div class="hero-media">
+        <img src="https://lakbaypinas.com/wp-content/uploads/2025/02/471333542_122116129676614614_476453595541820013_n-1536x864.jpg" id="openImage" alt="Dragon Treasure Castle">
+      </div>
+      <div class="hero-meta">
+        <span class="kicker">Culture</span>
+        <h1 class="page-title">Dragon Treasure Castle</h1>
+        <p class="page-subtitle">A fantasy-themed attraction that delivers dramatic architecture and unforgettable photo moments.</p>
+        <ul class="info-list">
+          <li><strong>📍 Location:</strong> Block 8, Irisville Subdivision, Baguio City, Benguet</li>
+          <li><strong>🕕 Best time:</strong> Late afternoon to evening</li>
+          <li><strong>🪙 Admission:</strong> ₱165 (Adult) | ₱132 (Student/Senior)</li>
+          <li><strong>📌 Highlights:</strong> Dragon architecture, fantasy gardens, immersive photo scenes</li>
+        </ul>
+      </div>
+    </section>
+
+       <div class="gallery-urls" data-img-1="https://lakbaypinas.com/wp-content/uploads/2025/02/471333542_122116129676614614_476453595541820013_n-1536x864.jpg" data-img-2="https://lh3.googleusercontent.com/gps-cs-s/APNQkAF4-QqpqtBkVLI2YI1TvjLHk69BHodc3irczcV3Y9s9I6w9BSH-r0E9Ah2yAqidRmZItqG9exvX1DDVHcy7ZT3kNtfWXkueCXQNxafpL2EJDyV3J16kqlHRFd7STGVVvNE_wdhxi1BpnNUA=s680-w680-h510-rw" data-img-3="https://lh3.googleusercontent.com/gps-cs-s/APNQkAECFJnw3kGaUzC8nivT4XShyfYq1LNg21A55BjWY3hlAwZRMG_QNA-TT5kLtkMAycDqQmy3ZjluVwuat-ok3ETXyl6ZfxXeRE1uwNRC1bzPe-os-bAsROfHpRh9iqT-iKxCEC4ostIaq90=s680-w680-h510-rw" data-img-4="https://lh3.googleusercontent.com/gps-cs-s/APNQkAHwVjWhC_Qb_w4idLjQfLoXznG4KZo8tObdgUcOgme-DfqffZ6y0Blxtswn_soNeY1oSJ_PjMziTyA2WRwm1Gdd0SOtXu4Ya5cKLgsHVy3W1GY_QlEQPgOGbXadBiKThSMKG-v3_wNRX94t=s680-w680-h510-rw" data-img-5="https://lh3.googleusercontent.com/gps-cs-s/APNQkAESrjfAG10x-La46CiGtBLhXBleR2HOzEDHkZWRoNgSo81FH1UChJckVpUmMwhB8R0qVVkuH-gMAH_Jt6mCPh3cVRfpUVXzL1cg4apzO0ug-6GkrGhRsfSCeA-6KwTpDtNBhxwREZvTP9w=s680-w680-h510-rw"></div>
+
+    <section class="detail-grid">
+      <div class="card">
+        <h3>About Dragon Treasure Castle</h3>
+        <p>Dragon Treasure Castle is a whimsical destination built for dramatic photos and fantasy-inspired sightseeing. The site blends colorful architecture with lush gardens and is a great side trip from central Baguio.</p>
+      </div>
+
+      <div class="card">
+        <h3>Nearby Spots</h3>
+        <ul class="info-list">
+          <li>🐉 Fantasy-themed garden structures</li>
+          <li>📸 Unique photo backdrops</li>
+          <li>🏞️ Irisville relaxation spots</li>
+          <li>☕ Nearby cafés and hillside views</li>
+        </ul>
+        
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Map Location</h3>
+      <p>Find Dragon Treasure Castle in Irisville Subdivision, a short drive from central Baguio and the city’s cultural districts.</p>
+      <div class="map-frame">
+        <div id="realMap"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- GIS SCRIPT -->
+<script>
+// GIS MAP
+const realMap = document.getElementById('realMap');
+if (realMap) {
+  var map = L.map(realMap).setView([16.422, 120.566], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  var marker = L.marker([16.422, 120.566])
+    .addTo(map)
+    .bindPopup("<b>Dragon Treasure Castle</b><br>Block 8, Irisville Subdivision, Baguio City");
+}
+</script>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+
+</body>
+</html>
+

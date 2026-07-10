@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Baguio Track | Jeepney Terminals</title>
+  <link rel="stylesheet" href="../assets/css/modern.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      color: #2c2c2c;
+      background: url("../assets/images/123.jpg") no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    /* HERO */
+    .page-header {
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+      border-radius: 24px;
+      padding: 40px 42px;
+      margin-bottom: 28px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      color: #111827;
+      display: grid;
+      gap: 16px;
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 3vw, 3.6rem);
+      color: #111827;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: #475569;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      max-width: 760px;
+    }
+
+    .page-header .page-actions {
+      margin-top: 24px;
+    }
+
+    .page-header .page-actions .back-btn {
+      background: var(--accent, #2563eb);
+      color: white;
+      padding: 14px 26px;
+      border-radius: 14px;
+      text-decoration: none;
+      font-weight: 700;
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease, background 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .page-header .page-actions .back-btn:hover {
+      background: var(--accent-light, #3b82f6);
+      transform: translateY(-1px);
+    }
+
+    /* MAIN */
+    main {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 110px 30px 48px 30px;
+      background: transparent;
+      border-radius: 12px;
+      flex: 1 0 auto;
+    }
+
+    .terminal-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .terminal-selection-panel {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      position: sticky;
+      top: calc(72px + 10px);
+    }
+
+    .terminal-selection-panel h2 {
+      margin: 0 0 18px;
+      font-size: 2rem;
+      color: #111827;
+    }
+
+    .terminal-selection-panel .terminal-options {
+      display: grid;
+      gap: 12px;
+    }
+
+    #infoPanel {
+      margin-top: 20px;
+      padding: 18px 22px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #111827;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(10px);
+      line-height: 1.6;
+      max-width: 100%;
+    }
+
+    .terminal-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 2px solid rgba(37, 99, 235, 0.25);
+      background: rgba(37, 99, 235, 0.08);
+      font-weight: 600;
+      font-size: 16px;
+      color: #1f2937;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .terminal-option:hover {
+      background: rgba(37, 99, 235, 0.16);
+      border-color: var(--accent, #2563eb);
+    }
+
+    .terminal-option input {
+      width: 22px;
+      height: 22px;
+      accent-color: var(--accent, #2563eb);
+      cursor: pointer;
+    }
+
+    .terminal-option input:checked {
+      accent-color: var(--accent, #2563eb);
+    }
+
+    .panel-actions {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .panel-actions button {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 20px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .apply-button {
+      background: var(--accent, #2563eb);
+      color: #fff;
+      font-size: 16px;
+      width: 100%;
+    }
+
+    .apply-button:hover {
+      background: var(--accent-light, #3b82f6);
+    }
+
+    .results-panel {
+      display: grid;
+      gap: 22px;
+    }
+
+    /* TERMINAL CARDS GRID - OLD STYLE (for responsive) */
+    .terminal-gallery {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .terminal-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .terminal-selection-panel {
+        position: relative;
+        top: auto;
+      }
+    }
+
+    /* BUTTON - OLD STYLE (removed) */
+    .locate-btn {
+      display: none;
+    }
+
+    /* MAP */
+    .map-card {
+      background: rgba(255, 255, 255, 0.92);
+      border-radius: 28px;
+      padding: 18px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(12px);
+    }
+
+    #map {
+      height: 550px;
+      width: 100%;
+      border-radius: 24px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    }
+
+    .map-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    #mapStatus {
+      color: #1f2937;
+      font-size: 0.98rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    #mapSummary {
+      color: #334155;
+      font-size: 0.95rem;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .clear-route-btn {
+      border: none;
+      background: rgba(37, 99, 235, 0.08);
+      color: #1f2937;
+      padding: 12px 18px;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .clear-route-btn:hover {
+      background: rgba(37, 99, 235, 0.16);
+    }
+
+    .terminal-note {
+      margin: 0 0 18px;
+      color: #475569;
+      font-size: 0.98rem;
+      line-height: 1.75;
+    }
+
+    /* INFO PANEL */
+    #infoPanel {
+      margin-top: 20px;
+      padding: 18px 22px;
+      border-radius: 22px;
+      background: rgba(255, 255, 255, 0.78);
+      color: #111827;
+      box-shadow: 0 16px 40px rgba(15, 23, 42, 0.12);
+      backdrop-filter: blur(10px);
+      line-height: 1.6;
+      max-width: 100%;
+    }
+
+    #infoPanel h2 {
+      margin: 0 0 12px 0;
+      font-size: 24px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    #infoPanel p {
+      margin: 8px 0;
+      color: #4b5563;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* PULSE MARKER */
+    .gpsPulse {
+      width: 14px;
+      height: 14px;
+      background: #1e90ff;
+      border-radius: 50%;
+      box-shadow: 0 0 0 rgba(30, 144, 255, 0.6);
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(30, 144, 255, 0.6);
+      }
+
+      70% {
+        box-shadow: 0 0 0 12px rgba(30, 144, 255, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(30, 144, 255, 0);
+      }
+    }
+
+    .active-route {
+      filter: drop-shadow(0 2px 4px rgba(0, 102, 255, 0.5));
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <header id="mainHeader">
+    <div class="header-container">
+      <a href="home.html" class="logo-area"><img src="../assets/images/loggo.png" alt="Baguio Track Logo"><h2>Baguio Track</h2></a>
+      <nav>
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html" class="active">Terminals</a>
+        <div class="nav-profile"><button class="nav-profile-btn" id="profileBtn">Profile</button></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-content">
+    <div class="terminal-layout">
+      <aside class="terminal-selection-panel">
+        <h2>Select Terminal</h2>
+        <p class="terminal-note">Pick a terminal and get live walking directions from your current location.</p>
+        <div class="terminal-options">
+          <label class="terminal-option"><input type="radio" name="terminal" value="Mines View Terminal" checked /> Mines View Terminal</label>
+          <label class="terminal-option"><input type="radio" name="terminal" value="Baguio Plaza Terminal" /> Baguio Plaza Terminal</label>
+          <label class="terminal-option"><input type="radio" name="terminal" value="Kayang Street Terminal" /> Kayang Street Terminal</label>
+          <label class="terminal-option"><input type="radio" name="terminal" value="Otek Street Terminal" /> Otek Street Terminal</label>
+        </div>
+        <div class="panel-actions">
+          <button class="apply-button" id="locateBtn" type="button">Enable Live Location</button>
+        </div>
+      </aside>
+
+      <section class="results-panel">
+        <div class="map-card">
+          <div id="map"></div>
+          <div class="map-meta">
+            <div>
+            <div id="mapStatus">Select a terminal to get started.</div>
+            <div id="mapSummary" class="map-summary">No route summary yet.</div>
+          </div>
+            <button id="clearRouteBtn" class="clear-route-btn" type="button">Clear Route</button>
+          </div>
+        </div>
+        <div id="infoPanel">Select a terminal to view directions from your location.</div>
+      </section>
+    </div>
+  </main>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+
+  <script>
+    function defaultMarkerIcon() {
+      return new L.Icon.Default();
+    }
+
+    const icons = {
+      red: defaultMarkerIcon(),
+      orange: defaultMarkerIcon(),
+      yellow: defaultMarkerIcon(),
+      violet: defaultMarkerIcon(),
+      black: defaultMarkerIcon(),
+      brown: defaultMarkerIcon(),
+      blue: defaultMarkerIcon()
+    };
+
+    const data = {
+      "Mines View Terminal": {
+        terminalCoords: [16.41205, 120.59725],
+        spots: [
+          { name: "Good Shepherd Convent", coords: [16.42233, 120.62613], note: "Take the Mines View jeep and ask to be dropped near Outlook Drive. The walk is short but uphill.", icon: icons.brown },
+          { name: "Botanical Garden", coords: [16.4150, 120.6130], note: "Use the Mines View route and tell the driver: 'Botanical Garden, please.'", icon: icons.red },
+          { name: "Mines View Park", coords: [16.4197, 120.6274], note: "This stop is one of the easiest because the viewing deck is close to the road.", icon: icons.orange },
+          { name: "The Mansion", coords: [16.4128927, 120.6199063], note: "Ask the driver to drop you near The Mansion gate for a short walk.", icon: icons.yellow },
+          { name: "Wright Park", coords: [16.415, 120.617], note: "A convenient stop for the park entrance and nearby viewpoints.", icon: icons.violet }
+        ],
+      },
+      "Baguio Plaza Terminal": {
+        terminalCoords: [16.41268, 120.59453],
+        spots: [
+          { name: "Camp John Hay", coords: [16.397029, 120.611360], note: "Ride the Scout Barrio / Plaza route and ask for Camp John Hay.", icon: icons.black },
+          { name: "Bell Church", coords: [16.431541, 120.598391], note: "Use the La Trinidad route and ask the driver to stop at Bell Church Road.", icon: icons.blue }
+        ],
+      },
+      "Kayang Street Terminal": {
+        terminalCoords: [16.41475, 120.59507],
+        spots: [
+          { name: "Lourdes Grotto", coords: [16.40999, 120.58088], note: "A steady uphill walk from the roadside; comfortable shoes are recommended.", icon: icons.black },
+          { name: "Mirador Heritage And Eco Park", coords: [16.4101478, 120.5786349], note: "Ask the driver to drop you near Mirador Road for the final uphill approach.", icon: icons.violet },
+          { name: "Diplomat Hotel", coords: [16.404, 120.587], note: "The route reaches Dominican Hill; the last stretch is uphill.", icon: icons.orange },
+          { name: "Tam-Awan Village", coords: [16.42997, 120.57663], note: "This is a simple stop because the entrance is close to the roadside.", icon: icons.brown },
+          { name: "Igorot Stone Kingdom", coords: [16.432, 120.575], note: "A convenient stop for visitors heading to Long Long Road.", icon: icons.black },
+          { name: "Dragon Treasure Castle", coords: [16.422, 120.566], note: "The approach is steeper than the others, so allow extra walking time.", icon: icons.orange }
+        ],
+      },
+      "Otek Street Terminal": {
+        terminalCoords: [16.41133, 120.59197],
+        spots: [
+          { name: "Lions Head", coords: [16.367, 120.606], note: "Ask for the Camp 6 / Kennon Road route and get off near Lion's Head.", icon: icons.yellow }
+        ],
+      },
+    };
+
+    let map = L.map("map").setView([16.4113013, 120.5919427], 17);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map);
+
+    let userMarker = null;
+    let routeLayer = null;
+    let selectedTerminalName = null;
+    let highlightedSpotName = null;
+    let liveLocationEnabled = false;
+
+    function enableLiveLocation() {
+      if (!navigator.geolocation) return alert("Geolocation not supported.");
+      liveLocationEnabled = true;
+      setInfoPanel(`<h2>Live location enabled</h2><p>📍 Tracking your location now. Select a terminal or wait for the route.</p>`);
+      navigator.geolocation.watchPosition(pos => {
+        const { latitude, longitude } = pos.coords;
+        if (!userMarker) {
+          userMarker = L.marker([latitude, longitude], {
+            icon: L.divIcon({
+              html: '<div class="gpsPulse"></div>',
+              className: '',
+              iconSize: [16, 16],
+            })
+          }).addTo(map);
+        } else {
+          userMarker.setLatLng([latitude, longitude]);
+        }
+        map.setView([latitude, longitude], 15);
+
+        if (selectedTerminalName) {
+          const { terminalCoords } = data[selectedTerminalName];
+          if (terminalCoords) {
+            renderTerminalMap(selectedTerminalName, highlightedSpotName);
+            setMapStatus('🔄 Updating route from your current location...');
+            drawRoute(userMarker.getLatLng(), terminalCoords);
+          }
+        }
+      }, () => {
+        alert("Unable to retrieve location. Please enable location services.");
+      });
+    }
+
+    document.getElementById("locateBtn").onclick = enableLiveLocation;
+
+    function setMapStatus(text) {
+      const status = document.getElementById('mapStatus');
+      if (status) status.textContent = text;
+    }
+
+    function setMapSummary(text) {
+      const summary = document.getElementById('mapSummary');
+      if (summary) summary.textContent = text;
+    }
+
+    function setInfoPanel(html) {
+      const panel = document.getElementById('infoPanel');
+      if (panel) panel.innerHTML = html;
+    }
+
+    function clearRoute() {
+      if (routeLayer) {
+        map.removeLayer(routeLayer);
+        routeLayer = null;
+      }
+      setMapStatus('Route cleared. Select a terminal or enable location again.');
+      setMapSummary('No route summary yet.');
+      setInfoPanel('<h2>Route cleared</h2><p>Select a terminal and enable live location to see walking distance and time from your current location.</p>');
+      if (userMarker) {
+        map.setView(userMarker.getLatLng(), 14);
+      }
+    }
+
+    function clearMapExceptUser() {
+      map.eachLayer(layer => {
+        if (layer instanceof L.Polyline) map.removeLayer(layer);
+        if (layer instanceof L.Marker) {
+          if (userMarker && layer === userMarker) return;
+          map.removeLayer(layer);
+        }
+      });
+    }
+
+    function getTerminalImage(terminal) {
+      if (terminal === "Mines View Terminal") {
+        return "../assets/images/minesviewterminal.jpeg";
+      } else if (terminal === "Baguio Plaza Terminal") {
+        return "../assets/images/baguiopterminal.jpeg";
+      } else if (terminal === "Kayang Street Terminal") {
+        return "../assets/images/kayangterminal.jpeg";
+      } else if (terminal === "Otek Street Terminal") {
+        return "../assets/images/otekterminal.png";
+      }
+      return '';
+    }
+
+    function renderTerminalInfo(terminal, description) {
+      const terminalImage = getTerminalImage(terminal);
+      const imgHtml = terminalImage ? `<img src="${terminalImage}" alt="${terminal}" style="width:100%; border-radius:12px; margin-top:12px;">` : '';
+      setInfoPanel(`<h2>${terminal}</h2><p>${description}</p>${imgHtml}`);
+    }
+
+    function renderTerminalMap(terminal, highlightSpot = null) {
+      if (!data[terminal]) return;
+      const { terminalCoords, spots } = data[terminal];
+
+      clearMapExceptUser();
+      if (routeLayer) {
+        map.removeLayer(routeLayer);
+        routeLayer = null;
+      }
+      map.setView(terminalCoords, terminal === "Otek Street Terminal" ? 17 : 15);
+
+      L.marker(terminalCoords, { icon: icons.blue })
+        .addTo(map)
+        .bindPopup(`<b>${terminal}</b>`);
+
+      spots.forEach(spot => {
+        const isHighlighted = highlightSpot && spot.name === highlightSpot;
+
+        let markerIcon;
+        if (isHighlighted) {
+          markerIcon = L.divIcon({
+            html: '<div style="background: #ff6b35; width: 44px; height: 44px; border-radius: 50%; border: 4px solid #fff; box-shadow: 0 0 0 3px #ff6b35; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-size: 22px; font-weight: bold;">★</span></div>',
+            className: 'leaflet-highlighted-marker',
+            iconSize: [52, 52],
+            iconAnchor: [26, 26],
+            popupAnchor: [0, -26]
+          });
+        } else {
+          markerIcon = L.divIcon({
+            html: '<div style="background: #2563eb; width: 28px; height: 28px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 2px #2563eb; display: flex; align-items: center; justify-content: center;"><span style="color: white; font-size: 14px;">📍</span></div>',
+            className: 'leaflet-spot-marker',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -16]
+          });
+        }
+
+        const marker = L.marker(spot.coords, { icon: markerIcon })
+          .addTo(map)
+          .bindPopup(`<b>${spot.name}</b><br>${spot.note}`);
+        
+        if (isHighlighted) {
+          marker.openPopup();
+        }
+      });
+    }
+
+    function selectTerminal(terminal, highlightSpot = null) {
+      if (!data[terminal]) return;
+      const { terminalCoords, spots = [] } = data[terminal];
+      selectedTerminalName = terminal;
+      highlightedSpotName = highlightSpot || null;
+
+      const radioButtons = document.querySelectorAll('input[name="terminal"]');
+      radioButtons.forEach(rb => {
+        rb.checked = rb.value === terminal;
+      });
+
+      renderTerminalMap(terminal, highlightedSpotName);
+
+      const highlightedSpot = spots.find(spot => spot.name === highlightedSpotName);
+
+      if (userMarker && liveLocationEnabled) {
+        renderTerminalInfo(terminal, 'Generating walking route from your location...');
+        setMapStatus('Routing to terminal...');
+        drawRoute(userMarker.getLatLng(), terminalCoords);
+      } else if (highlightedSpot) {
+        renderTerminalInfo(terminal, `Showing the walkable route and stop for ${highlightedSpot.name}.`);
+        setMapStatus('Displaying the terminal-to-attraction route.');
+        drawRoute(terminalCoords, highlightedSpot.coords);
+      } else {
+        renderTerminalInfo(terminal, '📍 Enable live location to get walking directions or choose a tourist spot from the list.');
+        setMapStatus('Terminal selected. Enable live location to route from your position.');
+      }
+    }
+
+    // Utility: normalize strings for forgiving matching
+    function normalizeKey(s) {
+      return (s || '')
+        .toString()
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    }
+
+    // Try to find a spot in `data` by normalized name (exact or partial match)
+    function findSpotInData(attraction) {
+      if (!attraction) return null;
+      const target = normalizeKey(attraction);
+      for (const terminalName in data) {
+        const terminal = data[terminalName];
+        if (!terminal || !terminal.spots) continue;
+        // exact normalized match first
+        for (const spot of terminal.spots) {
+          if (normalizeKey(spot.name) === target) {
+            return { terminal: terminalName, spot: spot.name };
+          }
+        }
+        // fallback: partial contains
+        for (const spot of terminal.spots) {
+          const spotKey = normalizeKey(spot.name);
+          if (spotKey.includes(target) || target.includes(spotKey)) {
+            return { terminal: terminalName, spot: spot.name };
+          }
+        }
+      }
+      return null;
+    }
+
+    // Auto-select terminal from URL parameter (robust matching)
+    function autoSelectTerminal() {
+      const params = new URLSearchParams(window.location.search);
+      const attraction = params.get('attraction');
+      const terminalParam = params.get('terminal');
+
+      // Keep the existing static map for quick direct matches
+      const attractionMap = {
+        'Mirador Heritage And Eco Park': { terminal: 'Kayang Street Terminal', spot: 'Mirador Heritage And Eco Park' },
+        'Botanical Garden': { terminal: 'Mines View Terminal', spot: 'Botanical Garden' },
+        'Mines View Park': { terminal: 'Mines View Terminal', spot: 'Mines View Park' },
+        'The Mansion': { terminal: 'Mines View Terminal', spot: 'The Mansion' },
+        'Camp John Hay': { terminal: 'Baguio Plaza Terminal', spot: 'Camp John Hay' },
+        'Lourdes Grotto': { terminal: 'Kayang Street Terminal', spot: 'Lourdes Grotto' },
+        'Good Shepherd Convent': { terminal: 'Mines View Terminal', spot: 'Good Shepherd Convent' },
+        'Lions Head': { terminal: 'Otek Street Terminal', spot: 'Lions Head' },
+        'Diplomat Hotel': { terminal: 'Kayang Street Terminal', spot: 'Diplomat Hotel' },
+        'Wright Park': { terminal: 'Mines View Terminal', spot: 'Wright Park' },
+        'Igorot Stone Kingdom': { terminal: 'Kayang Street Terminal', spot: 'Igorot Stone Kingdom' },
+        'Dragon Treasure Castle': { terminal: 'Kayang Street Terminal', spot: 'Dragon Treasure Castle' },
+        'Tam-Awan Village': { terminal: 'Kayang Street Terminal', spot: 'Tam-Awan Village' },
+        'Bell Church': { terminal: 'Baguio Plaza Terminal', spot: 'Bell Church' }
+      };
+
+      let attractionEntry = null;
+      if (attraction) {
+        // try exact static mapping first
+        attractionEntry = attractionMap[attraction] || null;
+        // otherwise try to find in the dynamic data structure
+        if (!attractionEntry) {
+          attractionEntry = findSpotInData(attraction);
+        }
+      }
+
+      const selectedTerminal = terminalParam || (attractionEntry ? attractionEntry.terminal : null);
+      const highlightSpot = attractionEntry ? attractionEntry.spot : null;
+
+      if (selectedTerminal) {
+        selectTerminal(selectedTerminal, highlightSpot);
+        if (attraction) {
+          enableLiveLocation();
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      setTimeout(autoSelectTerminal, 500);
+      document.querySelectorAll('input[name="terminal"]').forEach(input => {
+        input.addEventListener('change', () => selectTerminal(input.value));
+      });
+
+      const clearRouteBtn = document.getElementById('clearRouteBtn');
+      if (clearRouteBtn) {
+        clearRouteBtn.addEventListener('click', clearRoute);
+      }
+    });
+
+    function drawRoute(start, end) {
+      const url = `https://router.project-osrm.org/route/v1/foot/${start.lng},${start.lat};${end[1]},${end[0]}?overview=simplified&geometries=geojson&alternatives=false`;
+
+      fetch(url)
+        .then(res => res.json())
+        .then(res => {
+          if (!res.routes || !res.routes.length) {
+            setMapSummary('Route unavailable. Please try again.');
+            setMapStatus('Unable to find walking route.');
+            return;
+          }
+          const route = res.routes[0];
+          let coords = route.geometry.coordinates.map(c => [c[1], c[0]]);
+          if (routeLayer) map.removeLayer(routeLayer);
+          
+          routeLayer = L.polyline(coords, {
+            color: "#0066ff",
+            weight: 8,
+            opacity: 0.85,
+            lineCap: 'round',
+            lineJoin: 'round',
+            dashArray: '0',
+            className: 'active-route'
+          }).addTo(map);
+          
+          map.fitBounds(routeLayer.getBounds(), { padding: [60, 60] });
+
+          const distanceKm = (route.distance / 1000).toFixed(2);
+          const distanceM = Math.round(route.distance);
+          const durationMin = Math.round(route.duration / 60);
+          const displayDist = distanceM < 1000 ? `${distanceM}m` : `${distanceKm}km`;
+          const summaryText = `${displayDist} · ${durationMin} min walk`;
+          
+          const terminalImage = selectedTerminalName ? getTerminalImage(selectedTerminalName) : '';
+          const imgHtml = terminalImage ? `<img src="${terminalImage}" alt="${selectedTerminalName}" style="width:100%; border-radius:12px; margin-top:12px;">` : '';
+          
+          setMapSummary(summaryText);
+          setMapStatus('📍 Walking route active. Follow the blue line to the terminal.');
+          setInfoPanel(`<h2>Closest Route to ${selectedTerminalName}</h2><p><strong>${summaryText}</strong> from your current location.</p><p style="color: #666; font-size: 0.9rem; margin-top: 8px;">The route follows sidewalks and pedestrian paths. Stay on the blue line for the best way to reach the terminal.</p>${imgHtml}`);
+        })
+        .catch(() => {
+          setMapSummary('Route calculation failed.');
+          setMapStatus('Unable to generate walking route. Try adjusting your position.');
+        });
+    }
+  </script>
+
+<script>
+// Header behavior and profile/login button
+document.addEventListener('DOMContentLoaded', function() {
+  // Header scroll effect
+  const header = document.getElementById('mainHeader') || document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    if (!header) return;
+    if (window.pageYOffset > 50) header.classList.add('scrolled');
+    else header.classList.remove('scrolled');
+  });
+
+});
+</script>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lions Head | Baguio Track</title>
+
+  <link rel="stylesheet" href="../assets/css/modern.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- LEAFLET GIS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+:root { --header-height: 84px; }
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+  padding-top: var(--header-height);
+}
+a { text-decoration: none; }
+main {
+  max-width: 1200px;
+  margin: 0 auto 36px;
+  padding: 0 24px 32px;
+}
+.page-shell { display: grid; gap: 24px; }
+.hero-card { display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 24px; background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 12px 32px rgba(15,23,42,0.08); }
+.hero-media img { width: 100%; height: 330px; border-radius: 18px; object-fit: cover; cursor: pointer; display: block; }
+.hero-meta { display:flex; flex-direction:column; justify-content:center; gap:12px; }
+.kicker { display:inline-flex; width:max-content; padding:6px 12px; border-radius:999px; background:#eff6ff; color:var(--accent); font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.page-title { font-size:32px; line-height:1.2; color:var(--text-primary); margin:0; }
+.page-subtitle { margin:0; font-size:15px; color:var(--text-secondary); line-height:1.7; }
+.info-list { display:grid; gap:8px; padding-left:18px; margin:0; color:#4b5563;   list-style: none;  list-style: none; }
+    .info-list li { list-style: none; }
+.detail-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:24px; }
+.card { background:rgba(255,255,255,0.96); border:1px solid var(--border); border-radius:20px; padding:22px; box-shadow:0 10px 24px rgba(15,23,42,0.06); }
+.card h3 { margin:0 0 12px; color:var(--text-primary); font-size:18px; }
+.card p,.card li { color:#4b5563; line-height:1.7; }
+.map-frame { height:340px; border-radius:16px; overflow:hidden; border:1px solid var(--border); }
+#realMap { width:100%; height:100%; }
+.back-link { display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:10px 14px; background:var(--accent); color:#fff !important; border-radius:10px; font-weight:600; }
+.back-link:hover { background:var(--accent-light); }
+@media (max-width: 900px) { body { padding-top: 112px; } .hero-card, .detail-grid { grid-template-columns: 1fr; } .hero-media img { height: 260px; } }
+</style>
+</head>
+
+<body>
+
+<header id="mainHeader">
+  <div class="header-container">
+    <a href="home.html" class="logo-area">
+      <img src="../assets/images/loggo.png" alt="Baguio Track Logo">
+      <h2>Baguio Track</h2>
+    </a>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="tourist.html" class="active">Tourist Spots</a>
+      <a href="jeepterminal.html">Terminals</a>
+      <div class="nav-profile">
+        <button class="nav-profile-btn" id="profileBtn">Profile</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-shell">
+    <section class="hero-card">
+      <div class="hero-media">
+        <img src="../assets/images/baguiobg2.jpg" id="openImage" alt="Lions Head">
+      </div>
+      <div class="hero-meta">
+        <span class="kicker">Landmark</span>
+        <h1 class="page-title">Lions Head</h1>
+        <p class="page-subtitle">A dramatic mountain carving that welcomes travelers along Kennon Road.</p>
+        <ul class="info-list">
+          <li><strong>📍 Location:</strong> Kennon Road, near Barangay Calasungay, Tuba, Benguet</li>
+          <li><strong>🕕 Best time:</strong> Early morning or afternoon drive</li>
+          <li><strong>🪙 Admission:</strong> Free roadside landmark</li>
+          <li><strong>📌 Highlights:</strong> Iconic lion sculpture, scenic mountain photo stop</li>
+        </ul>
+      </div>
+    </section>
+
+    <div class="gallery-urls" data-img-1="../assets/images/baguiobg2.jpg" data-img-2="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEVYKwzlHAp8E_lqP20uPxTXHmNsVjI3A5J0aUh9dPHjiEJalQHDPLbD0fTYbuoHXPRXCjDYIAZ-up6thiPMSI8FyKAdpdrk4IDnJDTgP2kYTAhHXOyXHURi794DmV0XgymLrSu=s680-w680-h510-rw" data-img-3="https://lh3.googleusercontent.com/gps-cs-s/APNQkAFIs2Kee0IdJdmTvG2gEZHx9CyjYAk1ipxb-5jsLZZyfWQUfKGJkvDIiSBrKtEM-INaByRIOJh7IZEmN8yvG9rsXKpP3c1HCg2CHYcFFw2CIXJqTyvKTCySAqR8RcjNYBu2ctJLGg=s680-w680-h510-rw" data-img-4="https://lh3.googleusercontent.com/gps-cs-s/APNQkAFgs5S6QAT1ta4ay81t_QlS86kICzOjDUZp9frukk--F-0s2qTSxFe9-K1rqGfs0v7m530QNklGkZZq1s1FwnmTVnfpGhmhGSegSwrh80QCeC5x52wnN1kkvnlJEW0AQnmoUFjD=s680-w680-h510-rw"></div>
+
+    <section class="detail-grid">
+      <div class="card">
+        <h3>About Lions Head</h3>
+        <p>The Lion’s Head is one of the most photographed roadside landmarks in northern Luzon. Carved into the mountainside along Kennon Road, it marks the gateway to Baguio City and offers a memorable stop for visitors heading to the city.</p>
+      </div>
+
+      <div class="card">
+        <h3>Getting There</h3>
+        <p><strong>By Jeepney:</strong> Take the jeepney with the route: <strong>BAGUIO PLAZA-CAMP 6 V.V</strong>.</p>
+        <ul class="info-list">
+          <li>Board from Baguio Plaza or Shopper's Lane near Center Mall</li>
+          <li>Tell the driver: <strong>'Lions Head, please.'</strong></li>
+          <li>Travel time: approximately 20–30 minutes</li>
+        </ul>
+      </div>
+
+      <div class="card">
+        <h3>Nearby Spots</h3>
+        <ul class="info-list">
+          <li>⛰️ Kennon Road scenic passes</li>
+          <li>🛣️ Camp John Hay and Baguio city proper</li>
+          <li>🌲 Pine grove photo stops</li>
+          <li>🛍️ Local souvenir vendors nearby</li>
+        </ul>
+        
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Map Location</h3>
+      <p>View where the Lions Head landmark sits along the scenic Kennon Road route into Baguio.</p>
+      <div class="map-frame">
+        <div id="realMap"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- GIS SCRIPT -->
+<script>
+// GIS MAP
+const realMap = document.getElementById('realMap');
+if (realMap) {
+  var map = L.map(realMap).setView([16.367, 120.606], 17);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  var marker = L.marker([16.367, 120.606])
+    .addTo(map)
+    .bindPopup("<b>Lions Head</b><br>Kennon Road, Tuba, Benguet");
+}
+</script>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+
+</body>
+</html>
+

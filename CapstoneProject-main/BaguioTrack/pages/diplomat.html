@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diplomat Hotel | Baguio Track</title>
+
+  <link rel="stylesheet" href="../assets/css/modern.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- LEAFLET GIS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+:root { --header-height: 84px; }
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+  padding-top: var(--header-height);
+}
+a { text-decoration: none; }
+main {
+  max-width: 1200px;
+  margin: 0 auto 36px;
+  padding: 0 24px 32px;
+}
+.page-shell { display: grid; gap: 24px; }
+.hero-card { display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 24px; background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 12px 32px rgba(15,23,42,0.08); }
+.hero-media img { width: 100%; height: 330px; border-radius: 18px; object-fit: cover; cursor: pointer; display: block; }
+.hero-meta { display:flex; flex-direction:column; justify-content:center; gap:12px; }
+.kicker { display:inline-flex; width:max-content; padding:6px 12px; border-radius:999px; background:#eff6ff; color:var(--accent); font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.page-title { font-size:32px; line-height:1.2; color:var(--text-primary); margin:0; }
+.page-subtitle { margin:0; font-size:15px; color:var(--text-secondary); line-height:1.7; }
+.info-list { display:grid; gap:8px; padding-left:18px; margin:0; color:#4b5563;   list-style: none;  list-style: none; }
+    .info-list li { list-style: none; }
+.detail-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:24px; }
+.card { background:rgba(255,255,255,0.96); border:1px solid var(--border); border-radius:20px; padding:22px; box-shadow:0 10px 24px rgba(15,23,42,0.06); }
+.card h3 { margin:0 0 12px; color:var(--text-primary); font-size:18px; }
+.card p,.card li { color:#4b5563; line-height:1.7; }
+.map-frame { height:340px; border-radius:16px; overflow:hidden; border:1px solid var(--border); }
+#realMap { width:100%; height:100%; }
+.back-link { display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:10px 14px; background:var(--accent); color:#fff !important; border-radius:10px; font-weight:600; }
+.back-link:hover { background:var(--accent-light); }
+@media (max-width: 900px) { body { padding-top: 112px; } .hero-card, .detail-grid { grid-template-columns: 1fr; } .hero-media img { height: 260px; } }
+</style>
+</head>
+
+<body>
+
+<header id="mainHeader">
+  <div class="header-container">
+    <a href="home.html" class="logo-area">
+      <img src="../assets/images/loggo.png" alt="Baguio Track Logo">
+      <h2>Baguio Track</h2>
+    </a>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="tourist.html" class="active">Tourist Spots</a>
+      <a href="jeepterminal.html">Terminals</a>
+      <div class="nav-profile">
+        <button class="nav-profile-btn" id="profileBtn">Profile</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-shell">
+    <section class="hero-card">
+      <div class="hero-media">
+        <img src="../assets/images/dphotel.jpg" id="openImage" alt="Diplomat Hotel">
+      </div>
+      <div class="hero-meta">
+        <span class="kicker">Landmark</span>
+        <h1 class="page-title">Diplomat Hotel</h1>
+        <p class="page-subtitle">A historic hillside hotel known for faded grandeur and ghost stories.</p>
+        <ul class="info-list">
+          <li><strong>📍 Location:</strong> Dominican Hill, Diplomat Road, Baguio, 2600 Benguet</li>
+          <li><strong>🕕 Best time:</strong> Daytime visits for photo tours</li>
+          <li><strong>🪙 Admission:</strong> ₱10 (Adult) | ₱5 (Student/Senior)</li>
+          <li><strong>📌 Highlights:</strong> Historic architecture, haunted reputation, panoramic city views</li>
+        </ul>
+      </div>
+    </section>
+
+        <div class="gallery-urls" data-img-1="../assets/images/dphotel.jpg" data-img-2="https://lh3.googleusercontent.com/gps-cs-s/APNQkAGLa30cHS7S2rTOsjpN3X4ztEVPK6spvninSA-3NmqzUacMGV8KmXXOQdAILVMaTXKHru8-ZpCQ6u0eY8rTf56ennU7-5sbRdHgisM1t_Rp3tALyA4XNbMIS6mN-wff1zuVsigC3zzKVBET=s680-w680-h510-rw" data-img-3="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEhXGk0J6VZ4Tpy2Q-P0CO_RXs7VuOhxePQ5MMoFl6eEfRyxgkzv7zjkUcW8Z8Qi_iPZPDky5hyzS5p_aUwx394rpy6eQ_l0dActM0nDzlbPBViZdNoLL_gfhvNMjIgYMPEACF_IQ=s680-w680-h510-rw" data-img-4="https://lh3.googleusercontent.com/gps-cs-s/APNQkAHr3MJhoz4vMLM9-GN4f_Y5XywXAx9yfmVedLU_wNfVwR9tYDk3j0FixxIAULiRqNt1IgoIO8cYOndgLoV9KSbANTR3tnQIobUdifAHBvRF2oPJa3Licj-V2Q4TZov6XRBgiTU6=s680-w680-h510-rw" data-img-5="https://img.atlasobscura.com/QNAN2rrhxinWjmn48hxldhUa2w1ZQbW2LdKKuJ-OphI/rt:fit/h:400/q:81/sm:1/scp:1/ar:1/aHR0cHM6Ly9hdGxh/cy1kZXYuczMuYW1h/em9uYXdzLmNvbS91/cGxvYWRzL3BsYWNl/X2ltYWdlcy82OGQz/YTFmZi05YzliLTRm/ZjgtYWNjNi00MTg3/MWNlZDcyZDRjNjQw/NzQwYmQ4NjU5Y2Yw/MDNfUGhvdG8gMjkt/MTAtMjAxOCwgMSAx/MSAzMSBQTS5qcGc.webp"></div>
+
+    <section class="detail-grid">
+      <div class="card">
+        <h3>About Diplomat Hotel</h3>
+        <p>Diplomat Hotel is an iconic historic building on Dominican Hill. Once a seminary and later a luxury hotel, it is now known for its atmospheric ruins, grand staircase, chapel, and local legends.</p>
+      </div>
+
+      <div class="card">
+        <h3>Nearby Spots</h3>
+        <ul class="info-list">
+          <li>🏰 Camp John Hay</li>
+          <li>🌲 Mines View Park</li>
+          <li>📸 Diplomat Hotel ruins viewpoint</li>
+          <li>☕ Local cafés along Diplomat Road</li>
+        </ul>
+        
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Map Location</h3>
+      <p>Find the Diplomat Hotel ruins on Dominican Hill, one of Baguio’s most memorable heritage landmarks.</p>
+      <div class="map-frame">
+        <div id="realMap"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- GIS SCRIPT -->
+<script>
+// GIS MAP
+const realMap = document.getElementById('realMap');
+if (realMap) {
+  var map = L.map(realMap).setView([16.404, 120.587], 15);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  var marker = L.marker([16.404, 120.587])
+    .addTo(map)
+    .bindPopup("<b>Diplomat Hotel</b><br>Dominican Hill, Baguio City");
+}
+</script>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+
+</body>
+</html>
+

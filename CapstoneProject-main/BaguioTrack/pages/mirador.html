@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mirador Heritage & Eco-Spirituality Park | Baguio Track</title>
+
+  <link rel="stylesheet" href="../assets/css/modern.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- LEAFLET GIS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+:root { --header-height: 84px; }
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+  padding-top: var(--header-height);
+}
+a { text-decoration: none; }
+main {
+  max-width: 1200px;
+  margin: 0 auto 36px;
+  padding: 0 24px 32px;
+}
+.page-shell { display: grid; gap: 24px; }
+.hero-card { display: grid; grid-template-columns: 1.25fr 0.95fr; gap: 24px; background: rgba(255,255,255,0.96); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: 0 12px 32px rgba(15,23,42,0.08); }
+.hero-media img { width: 100%; height: 330px; border-radius: 18px; object-fit: cover; cursor: pointer; display: block; }
+.hero-meta { display:flex; flex-direction:column; justify-content:center; gap:12px; }
+.kicker { display:inline-flex; width:max-content; padding:6px 12px; border-radius:999px; background:#eff6ff; color:var(--accent); font-size:13px; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; }
+.page-title { font-size:32px; line-height:1.2; color:var(--text-primary); margin:0; }
+.page-subtitle { margin:0; font-size:15px; color:var(--text-secondary); line-height:1.7; }
+.info-list { display:grid; gap:8px; padding-left:18px; margin:0; color:#4b5563;   list-style: none;  list-style: none; }
+    .info-list li { list-style: none; }
+.detail-grid { display:grid; grid-template-columns:1.4fr 1fr; gap:24px; }
+.card { background:rgba(255,255,255,0.96); border:1px solid var(--border); border-radius:20px; padding:22px; box-shadow:0 10px 24px rgba(15,23,42,0.06); }
+.card h3 { margin:0 0 12px; color:var(--text-primary); font-size:18px; }
+.card p,.card li { color:#4b5563; line-height:1.7; }
+.map-frame { height:340px; border-radius:16px; overflow:hidden; border:1px solid var(--border); }
+#realMap { width:100%; height:100%; }
+.back-link { display:inline-flex; align-items:center; gap:8px; margin-top:16px; padding:10px 14px; background:var(--accent); color:#fff !important; border-radius:10px; font-weight:600; }
+.back-link:hover { background:var(--accent-light); }
+@media (max-width: 900px) { body { padding-top: 112px; } .hero-card, .detail-grid { grid-template-columns: 1fr; } .hero-media img { height: 260px; } }
+</style>
+</head>
+
+<body>
+
+<header id="mainHeader">
+  <div class="header-container">
+    <a href="home.html" class="logo-area">
+      <img src="../assets/images/loggo.png" alt="Baguio Track Logo">
+      <h2>Baguio Track</h2>
+    </a>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="tourist.html" class="active">Tourist Spots</a>
+      <a href="jeepterminal.html">Terminals</a>
+      <div class="nav-profile">
+        <button class="nav-profile-btn" id="profileBtn">Profile</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-shell">
+    <section class="hero-card">
+      <div class="hero-media">
+        <img src="../assets/images/mirador.jpg" id="openImage" alt="Mirador Heritage Park">
+      </div>
+      <div class="hero-meta">
+        <span class="kicker">Nature</span>
+        <h1 class="page-title">Mirador Heritage & Eco-Spirituality Park</h1>
+        <p class="page-subtitle">Find peace and breathtaking views atop Mirador Hill.</p>
+        <ul class="info-list">
+          <li><strong>📍 Location:</strong> Mirador Hill, Baguio City</li>
+          <li><strong>💰 Entrance Fee:</strong> ₱100</li>
+          <li><strong>🕕 Hours:</strong> 6:00 AM – 6:00 PM</li>
+          <li><strong>📌 Highlights:</strong> Torii gate • Bamboo trail • Sunset viewpoints • Meditation areas</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Editable gallery URLs (1-5) - edit these links in the HTML to change modal images -->
+    <div class="gallery-urls" data-img-1="../assets/images/mirador.jpg" data-img-2="https://lh3.googleusercontent.com/gps-cs-s/APNQkAHHWpHxdX0ZZ3dAzxbuYAL2meXy108YukkBUg3zNZwAH2WkpumfF35oJoETanz7TeD4e6NAA1zpMtiniaucszW-_hhE1CR5nNz1UugZMIKK9XxOqrpTR_SE8wQghu62jOTdOKecUA=s680-w680-h510-rw" data-img-3="https://lh3.googleusercontent.com/gps-cs-s/APNQkAF7YtJhcnGdT6ipgOfKDtqUO7dUnXPt6sF0wV0GonQXWqfpSS5UlldMqlx_H9AaRYBqq1Iq3qUbGHrEzZ-kVvuI-FBj9VGpt8rxXpRDkEZ3MxAOFbLcaRiYd7S_F-MpYOK5T7JvWQ=s680-w680-h510-rw" data-img-4="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEcC3pkNZ_2wVIS0mXquuEmLJP8dYyU6RJm-Gfws5hCxENURhPja77AUzWHBgiHjbT_w8V-amjY2my0CJXNOit3RBhizl8jmKAg_-Sa4JjQhg95PZHGxcSdCdpHY9srNV8FJv5f=s680-w680-h510-rw" data-img-5="https://lh3.googleusercontent.com/gps-cs-s/APNQkAHCNoOwp0Rj6sCn5h2oVhCVX9aysKnV39AYix7od42ZIwXfmLA1YVSeg1-xVlEzWGz9ZujFaoAhZdDoOC8RbA7rrzZSEPkRKA1UCK7vgZzWQBw2duMB73D8a23uwSMh6dZnhHsg=s680-w680-h510-rw"></div>
+
+    <section class="detail-grid">
+      <div class="card">
+        <h3>About Mirador Heritage Park</h3>
+        <p>Located behind the Lourdes Grotto, the Mirador Heritage & Eco-Spirituality Park features cultural landmarks, scenic viewpoints, rock gardens, and peaceful meditation areas perfect for reflection.</p>
+      </div>
+
+      <div class="card">
+        <h3>Nearby Spots & Food</h3>
+        <ul class="info-list">
+          <li>🙏 Lourdes Grotto</li>
+          <li>🏰 Diplomat Hotel</li>
+          <li>🌄 Sunset Viewing Deck</li>
+          <li>☕ Cafés around Mirador Hill</li>
+        </ul>
+        
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Map Location</h3>
+      <p>This interactive map shows the exact location of Mirador Heritage Park and the surrounding hilltop area.</p>
+      <div class="map-frame">
+        <div id="realMap"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<!-- OLD LIGHTBOX REMOVED (now handled by gallery modal in assets/js/header.js) -->
+
+<!-- GIS SCRIPT -->
+<script>
+// GIS MAP
+const realMap = document.getElementById('realMap');
+if (realMap) {
+  var map = L.map(realMap).setView([16.4101478,120.5786349], 17.5);
+
+  // Load Tiles
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  // Marker
+  var marker = L.marker([16.4101478,120.5786349])
+    .addTo(map)
+    .bindPopup("<b>Mirador Heritage & Eco-Spirituality Park</b><br>Baguio City");
+}
+</script>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+
+</body>
+</html>
+
+
+

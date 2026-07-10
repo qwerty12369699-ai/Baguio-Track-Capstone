@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Baguio Track | Tourist Spots</title>
+  <link rel="stylesheet" href="../assets/css/modern.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    :root {
+      --header-height: 72px;
+    }
+
+      html, body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        color: #111827;
+        background: url("../assets/images/123.jpg") no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main.portal-content {
+        flex: 1 0 auto;
+      }
+
+    a,
+    a:hover,
+    a:focus,
+    a:active{
+      text-decoration:none !important;
+      color:inherit;
+    }
+
+    main.portal-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 110px 30px 48px;
+    }
+
+    .page-header {
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+      border-radius: 24px;
+      padding: 40px 42px;
+      margin-bottom: 28px;
+      display: grid;
+      gap: 16px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 3vw, 3.6rem);
+      color: #111827;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+    }
+
+    .page-header p {
+      margin: 0;
+      max-width: 780px;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #475569;
+    }
+
+    .tourist-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .filters-panel {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      position: sticky;
+      top: calc(var(--header-height) + 10px);
+    }
+
+    .filters-panel h2 {
+      margin: 0 0 18px;
+      font-size: 2rem;
+      color: #111827;
+    }
+
+    .filter-group {
+      margin-bottom: 24px;
+    }
+
+    .filter-group label {
+      display: block;
+      margin-bottom: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .filter-group input[type="search"] {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid #d1d5db;
+      background: #f8fafc;
+    }
+
+    .checkbox-group {
+      display: grid;
+      gap: 12px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      background: rgba(37, 99, 235, 0.08);
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .checkbox-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent, #2563eb);
+    }
+
+    .panel-actions {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .panel-actions button {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 20px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .results-panel {
+      display: grid;
+      gap: 22px;
+    }
+
+    .attractions-list {
+      display: grid;
+      gap: 22px;
+    }
+
+    .attraction-card {
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      display: grid;
+      grid-template-columns: 320px 1fr;
+    }
+
+    .attraction-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      min-height: 240px;
+    }
+
+    .attraction-body {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .category-link {
+      display: inline-flex;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--accent, #2563eb);
+      font-weight: 700;
+    }
+
+    .attraction-title {
+      margin: 12px 0 8px;
+      font-size: 1.75rem;
+    }
+
+    .location,
+    .card-description {
+      color: #4b5563;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .card-button {
+      background: var(--accent, #2563eb);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 16px;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .card-button:hover {
+      background: var(--accent-light, #3b82f6);
+      transform: translateY(-1px);
+    }
+
+    .card-link {
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      padding: 14px 22px;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--accent, #2563eb);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card-link:hover {
+      background: rgba(37, 99, 235, 0.08);
+      border-color: var(--accent, #2563eb);
+    }
+
+    .no-results-message {
+      grid-column: 1 / -1;
+      padding: 28px;
+      text-align: center;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 16px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 16px;
+      margin-top: 24px;
+    }
+
+    .route-preview {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.08));
+      border: 1px solid rgba(37, 99, 235, 0.16);
+    }
+
+    .route-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 0.86rem;
+      font-weight: 700;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .route-pill i {
+      color: var(--accent, #2563eb);
+      font-size: 0.9rem;
+    }
+
+    .card-actions {
+      flex-wrap: wrap;
+    }
+
+    .card-link.commute-trigger {
+      background: #f8fafc;
+      color: #0f172a;
+      border: 1px solid rgba(37, 99, 235, 0.16);
+    }
+
+    .card-link.commute-trigger:hover {
+      background: #eff6ff;
+      border-color: rgba(37, 99, 235, 0.28);
+    }
+
+    .commute-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 2000;
+    }
+
+    .commute-modal-backdrop.active {
+      display: flex;
+    }
+
+    .commute-modal {
+      width: min(760px, 100%);
+      max-height: min(86vh, 900px);
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.28);
+    }
+
+    .commute-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .commute-modal-header h3 {
+      margin: 0 0 6px;
+      font-size: 1.4rem;
+      color: #0f172a;
+    }
+
+    .commute-modal-header p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.95rem;
+    }
+
+    .commute-close {
+      border: none;
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 999px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .guide-step {
+      display: grid;
+      gap: 8px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      margin-bottom: 12px;
+    }
+
+    .guide-step strong {
+      color: #0f172a;
+    }
+
+    .guide-step span {
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .guide-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--accent, #2563eb);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .guide-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .guide-actions a,
+    .guide-actions button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .guide-actions .secondary {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .guide-actions .primary {
+      background: var(--accent, #2563eb);
+      color: #ffffff;
+    }
+
+    .guide-note {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(59, 130, 246, 0.1));
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .leaflet-map-card {
+      margin-top: 14px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .leaflet-map {
+      height: 260px;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .tourist-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header id="mainHeader">
+    <div class="header-container">
+      <a href="home.html" class="logo-area"><img src="../assets/images/loggo.png" alt="Baguio Track Logo"><h2>Baguio Track</h2></a>
+      <nav>
+        <a href="home.html">Home</a>
+        <a href="tourist.html" class="active">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+        <div class="nav-profile"><button class="nav-profile-btn" id="profileBtn">Profile</button></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-content">
+    <section class="tourist-layout">
+      <aside class="filters-panel">
+        <h2>Find Spots</h2>
+        <div class="filter-group">
+          <label for="search-attraction">Search attractions</label>
+          <input id="search-attraction" type="search" placeholder="Search by name, place, or category" />
+        </div>
+        <div class="filter-group">
+          <label>Categories</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" value="Nature" checked /> Nature</label>
+            <label class="checkbox-item"><input type="checkbox" value="Park" checked /> Park</label>
+            <label class="checkbox-item"><input type="checkbox" value="Landmark" checked /> Landmark</label>
+            <label class="checkbox-item"><input type="checkbox" value="Culture" checked /> Culture</label>
+          </div>
+        </div>
+      </aside>
+
+      <section class="results-panel">
+        <div class="attractions-list">
+          <div class="no-results-message" id="noResultsMessage" style="display:none;">
+            No attractions found. Try a different search term or adjust your categories.
+          </div>
+
+      <!-- Mirador -->
+      <div class="attraction-card">
+        <img class="attraction-image" src="https://i.pinimg.com/736x/11/50/aa/1150aa2cd209123f65ae4af4bb5911f9.jpg" alt="Mirador Heritage and Eco Park">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Nature</span>
+            <h2 class="attraction-title">Mirador Heritage And Eco Park</h2>
+            <p class="location">Mirador Hill, Baguio City</p>
+            <p class="card-description">
+              A popular spot for tourists and locals alike, who come to enjoy the stunning views of Baguio City and the surrounding mountains and is also home to a bamboo grove, rock formations, and more.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="mirador.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Mirador%20Heritage%20And%20Eco%20Park&terminal=Kayang%20Street%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botanical Garden -->
+      <div class="attraction-card">
+        <img class="attraction-image" src="../assets/images/botanicalgarden.jpg" alt="Botanical Garden">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Nature</span>
+            <h2 class="attraction-title">Botanical Garden</h2>
+            <p class="location">Leonard Wood Road, Baguio City</p>
+            <p class="card-description">
+              A peaceful botanical sanctuary with towering pines, flower gardens, and cultural sculptures perfect for relaxing walks and photo spots.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="botanical.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Botanical%20Garden&terminal=Mines%20View%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Mines View Park -->
+      <div class="attraction-card">
+        <img class="attraction-image" src="../assets/images/minesviewpark.jpg" alt="Mines View Park">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Park</span>
+            <h2 class="attraction-title">Mines View Park</h2>
+            <p class="location"> Mines View Road, Baguio City</p>
+            <p class="card-description">
+              A popular viewpoint offering sweeping mountain vistas, historic mining landscapes, and shops selling local crafts and treats.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="minesview.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Mines%20View%20Park&terminal=Mines%20View%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- The Mansion -->
+      <div class="attraction-card">
+        <img class="attraction-image" src="../assets/images/mansion.jpg" alt="The Mansion">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Landmark</span>
+            <h2 class="attraction-title">The Mansion</h2>
+            <p class="location">Leonard Wood Road, Baguio City</p>
+            <p class="card-description">
+              The official summer residence of the Philippine President, known for its grand gate, manicured lawns, and historical significance.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="mansion.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=The%20Mansion&terminal=Mines%20View%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Camp John Hay -->
+      <div class="attraction-card">
+        <img class="attraction-image" src="../assets/images/camp.jpg" alt="Camp John Hay">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Park</span>
+            <h2 class="attraction-title">Camp John Hay</h2>
+            <p class="location">Loakan Road, Baguio City</p>
+            <p class="card-description">
+              A historic leisure complex with pine forests, trails, cafés, and heritage sites perfect for outdoor exploration.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="johnhay.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Camp%20John%20Hay&terminal=Baguio%20Plaza%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="attraction-card">
+        <img class="attraction-image" src="../assets/images/grotto.jpg" alt="Camp John Hay">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Landmark</span>
+            <h2 class="attraction-title">Lourdes Grotto</h2>
+            <p class="location">Dominican Hill Road, Mirador Hill, Baguio City</p>
+            <p class="card-description">
+              A beloved pilgrimage site featuring the Virgin Mary statue atop 252 steps and panoramic city views for reflective moments.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="grotto.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Lourdes%20Grotto&terminal=Kayang%20Street%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+        <div class="attraction-card">
+        <img class="attraction-image" src="https://i.pinimg.com/1200x/18/a5/28/18a5289c26005e8d1480cb4aef29950b.jpg" alt="Camp John Hay">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Culture</span>
+            <h2 class="attraction-title">Good Shepherd Convent</h2>
+            <p class="location">15 Gibraltar Road, Mines View, Baguio City</p>
+            <p class="card-description">
+              Famous for ube jam and local pasalubong, this convent is a scenic stop for shopping, snacks, and quiet reflection.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="goodshepherd.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Good%20Shepherd%20Convent&terminal=Mines%20View%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+        <div class="attraction-card">
+        <img class="attraction-image" src="../assets/images/lion.webp" alt="Lions Head">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Landmark</span>
+            <h2 class="attraction-title">Lions Head</h2>
+            <p class="location">Kennon Road, near Barangay Calasungay, Tuba, Benguet</p>
+            <p class="card-description">
+              The Lion’s Head along Kennon Road is a famous roadside landmark in Benguet, Philippines, carved into the mountainside as a large lion’s head sculpture.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="lionshead.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Lions%20Head&terminal=Otek%20Street%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+              <div class="attraction-card">
+        <img class="attraction-image" src="https://i.pinimg.com/1200x/90/ad/e5/90ade57f70358c88c020cb78fd4d4b00.jpg" alt="Diplomat Hotel">
+
+        <div class="attraction-body">
+          <div>
+            <span class="category-link">Landmark</span>
+            <h2 class="attraction-title">Diplomat Hotel</h2>
+            <p class="location">Dominican Hill, Diplomat Road, Baguio, 2600 Benguet</p>
+            <p class="card-description">
+              This hotel holds a lot of history, from being a seminary to a hotel, and now a popular tourist attraction known for its architecture and ghost stories.
+            </p>
+          </div>
+
+          <div class="card-actions">
+            <a class="card-button" href="diplomat.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Diplomat%20Hotel&terminal=Kayang%20Street%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+       <div class="attraction-card">
+        <img class="attraction-image" src="https://i.pinimg.com/1200x/9e/a1/9d/9ea19da330f29c25a4f5f920f46e466d.jpg" alt="Wright Park">
+      <div class="attraction-body">
+          <div>
+            <span class="category-link">Park</span>
+            <h2 class="attraction-title">Wright Park</h2>
+            <p class="location">The Mansion, Romulo Dr, Baguio, Benguet</p>
+            <p class="card-description">
+               The park is a favorite spot for tourists and locals to enjoy leisurely walks, take photos, and experience the cool mountain air.
+            </p>
+          </div>
+          <div class="card-actions">
+            <a class="card-button" href="wrightpark.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Wright%20Park&terminal=Mines%20View%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+        <div class="attraction-card">
+        <img class="attraction-image" src="https://i.pinimg.com/736x/f2/48/81/f248816e6f5950cb5ab481af89c95e5d.jpg" alt="Igorot Stone Kingdom">
+      <div class="attraction-body">
+          <div>
+            <span class="category-link">Culture</span>
+            <h2 class="attraction-title">Igorot Stone Kingdom</h2>
+            <p class="location">Long Long Road, Pinsao Proper, Baguio City</p>
+            <p class="card-description">
+               The park celebrates Igorot culture through the traditional “riprap” stone-laying technique, which involves stacking stones without cement to create durable structures.
+            </p>
+          </div>
+          <div class="card-actions">
+            <a class="card-button" href="igorot.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Igorot%20Stone%20Kingdom&terminal=Kayang%20Street%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+      <div class="attraction-card">
+        <img class="attraction-image" src="https://lakbaypinas.com/wp-content/uploads/2025/02/471333542_122116129676614614_476453595541820013_n-1536x864.jpg" alt="Dragon Treasure Castle">
+      <div class="attraction-body">
+          <div>
+            <span class="category-link">Culture</span>
+            <h2 class="attraction-title">Dragon Treasure Castle</h2>
+            <p class="location">Block 8, Irisville Subdivision, Baguio City, Benguet</p>
+            <p class="card-description">
+               Dragon Treasure Castle is worth visiting if you want dramatic photos, fantasy-style architecture, and a short Baguio side trip that feels different from the usual city stops.
+            </p>
+          </div>
+          <div class="card-actions">
+            <a class="card-button" href="dragon.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Dragon%20Treasure%20Castle&terminal=Kayang%20Street%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+      <div class="attraction-card">
+        <img class="attraction-image" src="https://i.pinimg.com/1200x/35/67/2c/35672c91f7f83f36499f5117c76f78d1.jpg" alt="Tam-Awan Village">
+      <div class="attraction-body">
+          <div>
+            <span class="category-link">Culture</span>
+            <h2 class="attraction-title">Tam-Awan Village</h2>
+            <p class="location">Long Long Benguet Rd, Baguio City, Benguet</p>
+            <p class="card-description">
+               Tam-Awan Village holds its true values and culture of the Cordilleran heritage.
+            </p>
+          </div>
+          <div class="card-actions">
+            <a class="card-button" href="tamawan.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Tam-Awan%20Village&terminal=Kayang%20Street%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+      <div class="attraction-card">
+        <img class="attraction-image" src="https://i.pinimg.com/736x/33/45/08/334508be47f39d2f03b6ba791a11a97e.jpg" alt="Bell Church">
+      <div class="attraction-body">
+          <div>
+            <span class="category-link">Culture</span>
+            <h2 class="attraction-title">Bell Church</h2>
+            <p class="location">Bell Church Rd, La Trinidad, Benguet</p>
+            <p class="card-description">
+              Bell Church is a Chinese temple known for its colorful architecture, serene gardens, and cultural significance to the local Chinese-Filipino community.
+            </p>
+          </div>
+          <div class="card-actions">
+            <a class="card-button" href="bellchurch.html">View Details</a>
+            <a class="card-link" href="jeepterminal.html?attraction=Bell%20Church&terminal=Baguio%20Plaza%20Terminal">Directions</a>
+          </div>
+        </div>
+      </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="commute-modal-backdrop" id="commuteModalBackdrop" aria-hidden="true">
+    <div class="commute-modal" role="dialog" aria-modal="true" aria-labelledby="commuteModalTitle">
+      <div class="commute-modal-header">
+        <div>
+          <h3 id="commuteModalTitle">Commute Guide</h3>
+          <p id="commuteModalSubtitle">A practical jeepney route for your visit.</p>
+        </div>
+        <button class="commute-close" id="closeCommuteModal" type="button" aria-label="Close commute guide">✕</button>
+      </div>
+      <div id="commuteModalContent"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+<script>
+const commuteData = {
+  'mirador heritage and eco park': {
+    title: 'Mirador Heritage and Eco Park',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Lourdes Dominican V.V.',
+    board: 'Kayang Street Jeepney Terminal',
+    dropOff: 'Mirador Road roadside pull-over (near Jesuit Villa gate)',
+    walk: '3–5 mins uphill walk',
+    walkTime: '3–5 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'The final stretch is uphill, so take it slowly and enjoy the view.',
+    coords: [16.4101478, 120.5786349]
+  },
+  'lourdes grotto': {
+    title: 'Lourdes Grotto',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Lourdes Dominican V.V.',
+    board: 'Kayang Street Jeepney Terminal',
+    dropOff: 'Dominican Road roadside near grotto stairs',
+    walk: '2–4 mins to entrance stairs',
+    walkTime: '2–4 mins',
+    returnTrip: 'Ride Plaza-bound jeep from roadside',
+    note: 'The stairs are the main part of the visit, so comfortable shoes help.',
+    coords: [16.40999, 120.58088]
+  },
+  'diplomat hotel': {
+    title: 'Diplomat Hotel',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Lourdes Dominican V.V.',
+    board: 'Kayang Street Jeepney Terminal',
+    dropOff: 'Dominican Hill Road junction',
+    walk: '5–8 mins uphill walk',
+    walkTime: '5–8 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'The last stretch is uphill, so it is best to take the walk slowly.',
+    coords: [16.404, 120.587]
+  },
+  'botanical garden': {
+    title: 'Botanical Garden',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Leonard Wood Road roadside near gate',
+    walk: '1–2 mins to entrance',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from Leonard Wood Road',
+    note: 'This stop is easy because the gate is close to the roadside.',
+    coords: [16.4150, 120.6130]
+  },
+  'wright park': {
+    title: 'Wright Park',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Pool of Pines roadside stop',
+    walk: '1–3 mins to horse riding area',
+    walkTime: '1–3 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'The stop is close to the park entrance and works well with the Mansion route.',
+    coords: [16.415, 120.617]
+  },
+  'the mansion': {
+    title: 'The Mansion',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Opposite Mansion gate roadside stop',
+    walk: '1–2 mins to gate',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from Outlook Drive',
+    note: 'The walk from the roadside to the gate is short and straightforward.',
+    coords: [16.4128927, 120.6199063]
+  },
+  'good shepherd convent': {
+    title: 'Good Shepherd Convent',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Outlook Drive roadside stop',
+    walk: '3–5 mins uphill walk',
+    walkTime: '3–5 mins',
+    returnTrip: 'Walk back to road, ride Plaza-bound jeep',
+    note: 'The convent is a good add-on after the nearby Mines View route.',
+    coords: [16.42233, 120.62613]
+  },
+  'mines view park': {
+    title: 'Mines View Park',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Mines View terminal / parking area',
+    walk: '1–2 mins to viewing deck',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from terminal',
+    note: 'The park is one of the easiest stops because the viewing deck is close by.',
+    coords: [16.4197, 120.6274]
+  },
+  'tam awan village': {
+    title: 'Tam-Awan Village',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Long Long via Tam-Awan V.V.',
+    board: 'Otek Street Jeepney Terminal',
+    dropOff: 'Tacay Road roadside near entrance',
+    walk: '1–2 mins to gate',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'This is a simple stop because the entrance is close to the roadside.',
+    coords: [16.42997, 120.57663]
+  },
+  'igorot stone kingdom': {
+    title: 'Igorot Stone Kingdom',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Long Long via Tam-Awan V.V.',
+    board: 'Otek Street Jeepney Terminal',
+    dropOff: 'Long Long Road roadside near entrance',
+    walk: '1–3 mins to gate',
+    walkTime: '1–3 mins',
+    returnTrip: 'Ride Plaza-bound jeep from roadside',
+    note: 'The walk is short, which makes this stop easy to pair with Tam-Awan.',
+    coords: [16.432, 120.575]
+  },
+  'dragon treasure castle': {
+    title: 'Dragon Treasure Castle',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | San Carlos HTS. NPC V.V.',
+    board: 'Kayang Jeep Terminal',
+    dropOff: 'Irisville Subdivision roadside',
+    walk: '8–12 mins uphill OR shuttle van',
+    walkTime: '8–12 mins',
+    returnTrip: 'Shuttle van back to main jeep route',
+    note: 'This stop needs more walking than the other routes, so a shuttle van can be practical.',
+    coords: [16.422, 120.566]
+  },
+  'bell church': {
+    title: 'Bell Church',
+    terminal: 'Baguio Plaza Terminal',
+    route: 'Baguio Plaza | La Trinidad V.V.',
+    board: 'Baguio Plaza Terminal',
+    dropOff: 'Bell Church Road roadside stop',
+    walk: '3–5 mins to gate',
+    walkTime: '3–5 mins',
+    returnTrip: 'Ride La Trinidad–Baguio jeep',
+    note: 'The short walk from the roadside is manageable for most visitors.',
+    coords: [16.431541, 120.598391]
+  },
+  'camp john hay': {
+    title: 'Camp John Hay',
+    terminal: 'Baguio Plaza Terminal',
+    route: 'Baguio Plaza | Scout Barrio V.V.',
+    board: 'Baguio Plaza Terminal',
+    dropOff: 'Main gate along Loakan Road',
+    walk: '3–10 mins inside area',
+    walkTime: '3–10 mins',
+    returnTrip: 'Ride Scout Barrio / Plaza jeep',
+    note: 'The gate is easy to reach, but the inside of the complex may need more walking.',
+    coords: [16.397029, 120.611360]
+  },
+  'lions head': {
+    title: 'Lions Head',
+    terminal: 'Otek Street Terminal',
+    route: 'Baguio City | Camp 6 V.V.',
+    board: 'Camp 6 Terminal, Otek Street, Baguio City',
+    dropOff: 'Kennon Road roadside pull-over',
+    walk: '0–2 mins (highway shoulder)',
+    walkTime: '0–2 mins',
+    returnTrip: 'Flag returning jeep or bus on Kennon Road',
+    note: 'Take the jeepney from Camp 6 Terminal on Otek Street and ask the driver to drop you off at Lion’s Head.',
+    coords: [16.367, 120.606]
+  }
+};
+
+function normalizeTitle(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function openCommuteModal(data, title) {
+  const modal = document.getElementById('commuteModalBackdrop');
+  const titleEl = document.getElementById('commuteModalTitle');
+  const subtitleEl = document.getElementById('commuteModalSubtitle');
+  const contentEl = document.getElementById('commuteModalContent');
+
+  if (!modal || !titleEl || !subtitleEl || !contentEl) return;
+
+  const mapId = `commuteMap-${Math.random().toString(36).slice(2, 9)}`;
+  titleEl.textContent = data.title || title;
+  const subtitleParts = [data.route, data.fare, data.travelTime].filter(Boolean);
+  subtitleEl.textContent = subtitleParts.join(' • ');
+
+  let modalHtml = `
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-bus"></i> Jeep Route</div>
+      <strong>Route:</strong>
+      <span>${data.route}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-location-dot"></i> Board</div>
+      <strong>Board at:</strong>
+      <span>${data.board}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-stop-circle"></i> Drop-off</div>
+      <strong>Get off at:</strong>
+      <span>${data.dropOff}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-person-walking"></i> Walk</div>
+      <strong>Walking time:</strong>
+      <span>${data.walk}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-rotate-left"></i> Return</div>
+      <strong>Going back:</strong>
+      <span>${data.returnTrip}</span>
+    </div>
+  `;
+
+  if (data.note) {
+    modalHtml += `
+      <div class="guide-note">${data.note}</div>
+    `;
+  }
+
+  modalHtml += `
+    <div class="leaflet-map-card">
+      <div id="${mapId}" class="leaflet-map"></div>
+    </div>
+    <div class="guide-actions"></div>
+  `;
+
+  contentEl.innerHTML = modalHtml;
+
+  modal.classList.add('active');
+  document.body.classList.add('modal-open');
+
+  setTimeout(() => renderLeafletMap(data, mapId), 80);
+}
+
+function renderLeafletMap(data, mapId) {
+  if (!window.L) return;
+
+  const container = document.getElementById(mapId);
+  if (!container) return;
+
+  const terminalCoords = getTerminalCoords(data.terminal);
+  const attractionCoords = Array.isArray(data.coords) && data.coords.length === 2 ? data.coords : null;
+  if (!terminalCoords || !attractionCoords) return;
+
+  const map = L.map(container, { zoomControl: true, scrollWheelZoom: false }).setView(terminalCoords, 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const terminalIcon = L.divIcon({
+    html: '<i class="fa-solid fa-bus" style="color:#ffffff; font-size:14px;"></i>',
+    className: 'leaflet-terminal-icon',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+
+  const spotIcon = L.divIcon({
+    html: '<i class="fa-solid fa-location-dot" style="color:#ffffff; font-size:14px;"></i>',
+    className: 'leaflet-spot-icon',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+
+  L.marker(terminalCoords, { icon: terminalIcon }).addTo(map).bindPopup(`<b>${data.terminal}</b><br>Jeepney terminal`).openPopup();
+  L.marker(attractionCoords, { icon: spotIcon }).addTo(map).bindPopup(`<b>${data.title}</b><br>${data.dropOff}`).openPopup();
+
+  const routeUrl = `https://router.project-osrm.org/route/v1/foot/${terminalCoords[1]},${terminalCoords[0]};${attractionCoords[1]},${attractionCoords[0]}?overview=full&geometries=geojson`;
+
+  fetch(routeUrl)
+    .then((response) => response.json())
+    .then((response) => {
+      if (!response.routes || !response.routes.length) return;
+      const route = response.routes[0];
+      const coordinates = route.geometry.coordinates.map((point) => [point[1], point[0]]);
+      L.polyline(coordinates, { color: '#2563eb', weight: 6, opacity: 0.9 }).addTo(map);
+      map.fitBounds([[terminalCoords[0], terminalCoords[1]], [attractionCoords[0], attractionCoords[1]]], { padding: [28, 28] });
+    })
+    .catch(() => {
+      map.fitBounds([[terminalCoords[0], terminalCoords[1]], [attractionCoords[0], attractionCoords[1]]], { padding: [28, 28] });
+    });
+
+  setTimeout(() => map.invalidateSize(), 120);
+}
+
+function getTerminalCoords(terminal) {
+  const terminalMap = {
+    'Mines View Terminal': [16.4119181, 120.5972157],
+    'Baguio Plaza Terminal': [16.4126522, 120.5945013],
+    'Kayang Street Terminal': [16.4147067, 120.5950004],
+    'Otek Street Terminal': [16.4113013, 120.5919427]
+  };
+
+  return terminalMap[terminal] || null;
+}
+
+function closeCommuteModal() {
+  const modal = document.getElementById('commuteModalBackdrop');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function attachCommuteGuides() {
+  const cards = document.querySelectorAll('.attraction-card');
+
+  cards.forEach((card) => {
+    const titleEl = card.querySelector('.attraction-title');
+    const titleText = titleEl?.textContent?.trim() || '';
+    const key = normalizeTitle(titleText);
+    const data = commuteData[key];
+
+    if (!data) return;
+
+    const body = card.querySelector('.attraction-body');
+    const actions = body?.querySelector('.card-actions');
+    if (!body || !actions) return;
+
+    const mapLink = actions.querySelector('.card-link');
+    if (mapLink) {
+      mapLink.textContent = 'Go to Terminal';
+      mapLink.href = `jeepterminal.html?attraction=${encodeURIComponent(titleText)}${data.terminal ? '&terminal=' + encodeURIComponent(data.terminal) : ''}`;
+      mapLink.target = '_self';
+      mapLink.rel = '';
+    }
+
+    const commuteButton = document.createElement('button');
+    commuteButton.type = 'button';
+    commuteButton.className = 'card-link commute-trigger';
+    commuteButton.innerHTML = '<i class="fa-solid fa-route"></i> Commute Guide';
+    commuteButton.addEventListener('click', () => openCommuteModal(data, titleText));
+    actions.insertBefore(commuteButton, mapLink);
+  });
+}
+
+// Attraction Filtering System
+function filterAttractions() {
+  const searchText = document.getElementById('search-attraction').value.toLowerCase().trim();
+  
+  // Get selected categories
+  const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+  const selectedCats = [];
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      selectedCats.push(cb.value);
+    }
+  });
+  
+  // Filter each card
+  const cards = document.querySelectorAll('.attraction-card');
+  let visibleCount = 0;
+
+  cards.forEach(card => {
+    const categorySpan = card.querySelector('.category-link');
+    const titleH2 = card.querySelector('.attraction-title');
+    const descP = card.querySelector('.card-description');
+    
+    const cardCategory = categorySpan ? categorySpan.textContent.trim() : '';
+    const cardTitle = titleH2 ? titleH2.textContent.toLowerCase() : '';
+    const cardDesc = descP ? descP.textContent.toLowerCase() : '';
+    
+    // Check if category matches
+    let categoryMatch = false;
+    if (selectedCats.length === 0) {
+      categoryMatch = true;
+    } else {
+      categoryMatch = selectedCats.includes(cardCategory);
+    }
+    
+    // Check if search matches
+    let searchMatch = false;
+    if (searchText === '') {
+      searchMatch = true;
+    } else {
+      searchMatch = cardTitle.includes(searchText) || 
+                   cardDesc.includes(searchText) || 
+                   cardCategory.toLowerCase().includes(searchText);
+    }
+    
+    // Show or hide card
+    if (categoryMatch && searchMatch) {
+      card.style.display = 'grid';
+      visibleCount += 1;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const noResultsMessage = document.getElementById('noResultsMessage');
+  if (noResultsMessage) {
+    noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+}
+
+function clearAllFilters() {
+  document.getElementById('search-attraction').value = '';
+  
+  const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.checked = true;
+  });
+  
+  filterAttractions();
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Header scroll
+  const header = document.getElementById('mainHeader') || document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    if (!header) return;
+    if (window.pageYOffset > 50) header.classList.add('scrolled'); else header.classList.remove('scrolled');
+  });
+
+  // Setup filter event listeners
+  const searchBox = document.getElementById('search-attraction');
+  if (searchBox) {
+    searchBox.addEventListener('input', filterAttractions);
+    searchBox.addEventListener('change', filterAttractions);
+  }
+
+  const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', filterAttractions);
+  });
+
+  document.getElementById('closeCommuteModal')?.addEventListener('click', closeCommuteModal);
+  document.getElementById('commuteModalBackdrop')?.addEventListener('click', (event) => {
+    if (event.target.id === 'commuteModalBackdrop') {
+      closeCommuteModal();
+    }
+  });
+
+  attachCommuteGuides();
+
+  // Initial filter run
+  filterAttractions();
+});
+</script>
+</body>
+</html>
+

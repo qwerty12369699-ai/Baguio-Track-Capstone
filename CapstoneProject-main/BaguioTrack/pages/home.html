@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baguio Track | Discover the City of Pines</title>
+  <link rel="stylesheet" href="../assets/css/modern.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    .slider-container {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      height: 220px;
+      overflow: hidden;
+      border-radius: 20px;
+      background: #eef2ff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slider-container img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px;
+      transition: opacity 0.5s ease;
+    }
+
+    .slider-dots {
+      position: absolute;
+      bottom: 12px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      z-index: 2;
+    }
+
+    .slider-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.7);
+      border: 1px solid rgba(31, 41, 55, 0.15);
+      cursor: default;
+      pointer-events: none;
+      transition: background 0.25s ease, transform 0.25s ease;
+    }
+
+    .slider-dot.active {
+      background: #ffffff;
+      transform: scale(1.1);
+    }
+
+    .content-section .card:hover .card-image img,
+    .content-section .card-image img {
+      transform: none !important;
+      cursor: default !important;
+      pointer-events: none !important;
+    }
+
+    /* Rules/Prohibited Acts Section */
+    .prohibited-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      width: 100%;
+    }
+
+    .prohibited-card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      border: 1px solid #e5e7eb;
+    }
+
+    .prohibited-card:hover {
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+      background: #eff6ff;
+      border-color: #2563eb;
+    }
+
+    .prohibited-icon {
+      font-size: 48px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 60px;
+    }
+
+    .prohibited-info h5 {
+      margin: 0 0 8px 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .prohibited-info p {
+      margin: 0;
+      font-size: 14px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+
+    .hero {
+      min-height: 720px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: url('https://i.pinimg.com/1200x/a6/bd/4d/a6bd4db7ee7053689bd971b36cbcd1ef.jpg') center center / cover no-repeat;
+      padding: 140px 30px 120px;
+      color: #ffffff;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      display: none;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .hero h1,
+    .hero p {
+      color: #ffffff;
+    }
+
+    .rules-section {
+      padding: 80px 40px;
+      margin-bottom: 60px;
+    }
+  </style>
+
+</head>
+<body>
+
+<!-- HEADER -->
+  <header id="mainHeader">
+    <div class="header-container">
+      <a href="home.html" class="logo-area"><img src="../assets/images/loggo.png" alt="Baguio Track Logo"><h2>Baguio Track</h2></a>
+      <nav>
+        <a href="home.html" class="active">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+        <div class="nav-profile"><button class="nav-profile-btn" id="profileBtn">Profile</button></div>
+      </nav>
+    </div>
+  </header>
+
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>Discover the City of Pines</h1>
+    <p>Experience cool mountain air, iconic sights, and local stories with one modern guide for every Baguio visit.</p>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS SECTION -->
+<section class="content-section" style="background: linear-gradient(135deg, #f7fbff 0%, #ffffff 100%);">
+  <div class="section-container">
+    <div class="section-header">
+      <h2>Why Baguio Shines</h2>
+      <p>Explore the timeless mountain mood, cultural highlights, and travel ease that make Baguio unforgettable.</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-image slider-container">
+          <img id="coolMountainSlider" src="../assets/images/slideimg1.jpg" alt="Cool Mountain Escape image">
+          <div class="slider-dots" id="coolMountainSliderDots">
+            <span class="slider-dot active" data-index="0"></span>
+            <span class="slider-dot" data-index="1"></span>
+            <span class="slider-dot" data-index="2"></span>
+          </div>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Cool Mountain Escape</h3>
+          <p class="card-description">Breathe fresh pine air, enjoy crisp mornings, and relax in a city known for its refreshing climate and scenic views.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-image slider-container">
+          <img id="heritageSlider" src="../assets/images/slideimg4.jpg" alt="Heritage & Local Flavor image">
+          <div class="slider-dots" id="heritageSliderDots">
+            <span class="slider-dot active" data-index="0"></span>
+            <span class="slider-dot" data-index="1"></span>
+            <span class="slider-dot" data-index="2"></span>
+          </div>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Heritage & Local Flavor</h3>
+          <p class="card-description">Discover vibrant markets, artisan crafts, strawberry farms, and the city’s warm hospitality scene.</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-image slider-container">
+          <img id="creativeSoulSlider" src="../assets/images/slideimg7.jpg" alt="Artistic & Creative Soul image">
+          <div class="slider-dots" id="creativeSoulSliderDots">
+            <span class="slider-dot active" data-index="0"></span>
+            <span class="slider-dot" data-index="1"></span>
+            <span class="slider-dot" data-index="2"></span>
+          </div>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Artistic & Creative Soul</h3>
+          <p class="card-description">Explore a UNESCO Creative City filled with vibrant street art, local galleries, traditional weaving, and inspiring indigenous crafts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT SECTION -->
+<section class="content-section">
+  <div class="content-grid">
+    <div class="content-image">
+      <img src="../assets/images/welcomeb.jpg" alt="Baguio City">
+    </div>
+    <div class="content-body">
+      <h2>Welcome to Baguio City</h2>
+      <p>Known as the Summer Capital of the Philippines, Baguio City is famous for its cool climate, beautiful pine forests, and scenic mountain views. Nestled in the Cordillera Mountains, it offers a refreshing escape and a unique blend of nature, culture, and history.</p>
+      <p>Visitors can enjoy popular attractions, vibrant markets, local cuisine, and colorful festivals while experiencing the city's warm hospitality. Whether you're looking for relaxation, adventure, or cultural experiences, Baguio City is a destination that has something for everyone.</p>
+      <p>Use Baguio Track as your local companion for discovering the best of the City of Pines — from memorable sights and cultural experiences to smart routes and authentic food finds.</p>
+    </div>
+  </div>
+</section>
+
+<!-- QUICK LINKS SECTION -->
+<section class="content-section" style="background: #f9fafb; border-bottom: 1px solid var(--border);">
+  <div class="section-container">
+    <div class="section-header">
+      <h2>Explore by Category</h2>
+      <p>Find what you're looking for</p>
+    </div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-image" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-camera" style="font-size: 80px; color: var(--accent);"></i>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Tourist Attractions</h3>
+          <p class="card-description">Discover the most popular and scenic spots in Baguio City, from botanical gardens to mountain viewpoints.</p>
+          <a href="tourist.html" class="card-link">Explore →</a>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-image" style="background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); display: flex; align-items: center; justify-content: center;">
+          <i class="fas fa-van-shuttle" style="font-size: 80px; color: var(--accent);"></i>
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">Transportation</h3>
+          <p class="card-description">Find jeepney terminals, routes, and transportation options to get around the city easily.</p>
+          <a href="jeepterminal.html" class="card-link">View Terminals →</a>
+        </div>
+      </div>
+
+      <!-- Safety card removed per site-wide header/footer policy -->
+    </div>
+  </div>
+</section>
+
+<!-- ANNOUNCEMENTS SECTION -->
+<section class="announcements-section">
+  <div class="section-container">
+    <div class="section-header">
+      <h2>Latest Announcements</h2>
+      <p>Stay updated with important information and notices</p>
+    </div>
+    <div class="announcements-container" id="announcementsContainer">
+      <div class="no-announcements">
+        <p>No announcements at the moment. Check back soon!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- LOCAL ORDINANCES & PROHIBITED ACTS SECTION -->
+<section class="rules-section" style="background: #fdfdfd;">
+  <div class="section-container">
+    <div class="section-header">
+      <h2>Local Ordinances & Prohibited Acts</h2>
+      <p>Help us keep Baguio clean and orderly. Please avoid the following prohibited acts.</p>
+    </div>
+
+    <div class="prohibited-grid">
+      <div class="prohibited-card">
+        <span class="prohibited-icon">🚭</span>
+        <div class="prohibited-info">
+          <h5>No Smoking or Vaping</h5>
+          <p>Baguio is a Smoke-Free City. Smoking and vaping in public places are strictly prohibited.</p>
+        </div>
+      </div>
+
+      <div class="prohibited-card">
+        <span class="prohibited-icon">🚮</span>
+        <div class="prohibited-info">
+          <h5>No Littering</h5>
+          <p>Keep the City of Pines clean. Dispose of your trash in designated bins only.</p>
+        </div>
+      </div>
+
+      <div class="prohibited-card">
+        <span class="prohibited-icon">🏍️</span>
+        <div class="prohibited-info">
+          <h5>Session Road Restrictions</h5>
+          <p>Motorcycles, tricycles, and bicycles are strictly prohibited along Session Road and other CBD areas.</p>
+        </div>
+      </div>
+
+      <div class="prohibited-card">
+        <span class="prohibited-icon">⚡</span>
+        <div class="prohibited-info">
+          <h5>City-Wide Speed Limits</h5>
+          <p><strong>20 kph</strong> in CBD, major roads, and school zones. <strong>30-40 kph</strong> on national roads and circumferential roads.</p>
+        </div>
+      </div>
+
+      <div class="prohibited-card">
+        <span class="prohibited-icon">🚶</span>
+        <div class="prohibited-info">
+          <h5>No Jaywalking</h5>
+          <p>Use designated pedestrian crossings and overpasses, especially in the CBD area.</p>
+        </div>
+      </div>
+
+      <div class="prohibited-card">
+        <span class="prohibited-icon">🅿️</span>
+        <div class="prohibited-info">
+          <h5>No Illegal Parking</h5>
+          <p>Avoid parking on main roads and tow-away zones. Use designated parking areas.</p>
+        </div>
+      </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+
+<script>
+
+
+  function escapeHtml(text) {
+    return String(text || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  function toggleAnnouncementText(button) {
+    const card = button.closest('.announcement-card');
+    const content = card.querySelector('.announcement-content');
+    const isExpanded = button.dataset.expanded === 'true';
+
+    if (isExpanded) {
+      content.textContent = content.dataset.preview;
+      content.classList.add('preview');
+      button.textContent = 'View more';
+      button.dataset.expanded = 'false';
+    } else {
+      content.textContent = content.dataset.full;
+      content.classList.remove('preview');
+      button.textContent = 'Show less';
+      button.dataset.expanded = 'true';
+    }
+  }
+
+  const titleImageMap = {
+    "Road Advisory": "https://i.pinimg.com/736x/d8/7c/bd/d87cbd46b8568281ad7c0bec4915ed82.jpg",
+    "Traffic Advisory": "https://i.pinimg.com/1200x/74/6b/43/746b43f5d833fd400aebddd4b78ecfaf.jpg",
+    "Weather Advisory": "https://i.pinimg.com/736x/1a/15/d4/1a15d47a3605e29b1eb18583a28f4af7.jpg",
+    "Tourist Attraction Update": "https://i.pinimg.com/1200x/2a/89/65/2a89651f80ba708c3d133e717e16eca0.jpg",
+    "Event Announcement": "https://i.pinimg.com/1200x/ab/d1/3e/abd13eaea406f9c1333030bf8fb25f4a.jpg"
+  };
+
+  function getTitleImage(title) {
+    return titleImageMap[title] || null;
+  }
+
+  // Load announcements from localStorage
+  async function loadAnnouncements() {
+    try {
+      const announcements = JSON.parse(localStorage.getItem('announcements')) || [];
+      const container = document.getElementById('announcementsContainer');
+      
+      if (announcements.length === 0) {
+        container.innerHTML = '<div class="no-announcements"><p>No announcements at the moment. Check back soon!</p></div>';
+        return;
+      }
+
+      // Sort announcements by date (newest first)
+      announcements.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Get today's date
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      // Separate announcements into today and previous
+      const todayAnnouncements = announcements.filter(ann => {
+        const annDate = new Date(ann.date);
+        annDate.setHours(0, 0, 0, 0);
+        return annDate.getTime() === today.getTime();
+      });
+
+      const previousAnnouncements = announcements.filter(ann => {
+        const annDate = new Date(ann.date);
+        annDate.setHours(0, 0, 0, 0);
+        return annDate.getTime() !== today.getTime();
+      });
+
+      let html = '';
+
+      // Today's announcements section
+      html += '<div class="announcements-section-group">';
+      html += '<h3 class="announcement-section-label">Today\'s Announcements</h3>';
+      if (todayAnnouncements.length > 0) {
+        html += todayAnnouncements.map(announcement => {
+          const contentText = String(announcement.content || '');
+          const imageUrl = announcement.image || getTitleImage(announcement.title);
+          const isCompact = !imageUrl && contentText.trim().length <= 120;
+          const isLongText = contentText.trim().length > 220;
+          const previewText = isLongText ? `${contentText.trim().slice(0, 220).replace(/\s+$/, '')}...` : contentText;
+          return `
+          <div class="announcement-card ${isCompact ? 'compact' : ''} animate-fade-in">
+            ${imageUrl ? `<div class="announcement-image"><img src="${imageUrl}" alt="Announcement" onerror="this.style.display='none';this.parentElement.classList.add('image-broken');"></div>` : (!isCompact ? `<div class="announcement-image image-broken"></div>` : '')}
+            <div class="announcement-header">
+              <h3 class="announcement-title">${escapeHtml(announcement.title)}</h3>
+              <span class="announcement-date">${new Date(announcement.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+            </div>
+            <div class="announcement-content preview" data-full="${escapeHtml(contentText)}" data-preview="${escapeHtml(previewText)}">${escapeHtml(previewText)}</div>
+            ${isLongText ? `<button type="button" class="view-more-btn" data-expanded="false" onclick="toggleAnnouncementText(this)">View more</button>` : ''}
+          </div>
+        `}).join('');
+      } else {
+        html += '<div class="no-announcements"><p>No announcements for today.</p></div>';
+      }
+      html += '</div>';
+
+      // Previous announcements section
+      html += '<div class="announcements-section-group">';
+      html += '<h3 class="announcement-section-label">Previous Announcements</h3>';
+      if (previousAnnouncements.length > 0) {
+        html += previousAnnouncements.map(announcement => {
+          const contentText = String(announcement.content || '');
+          const imageUrl = announcement.image || getTitleImage(announcement.title);
+          const isCompact = !imageUrl && contentText.trim().length <= 120;
+          const isLongText = contentText.trim().length > 220;
+          const previewText = isLongText ? `${contentText.trim().slice(0, 220).replace(/\s+$/, '')}...` : contentText;
+          return `
+          <div class="announcement-card ${isCompact ? 'compact' : ''} animate-fade-in">
+            ${imageUrl ? `<div class="announcement-image"><img src="${imageUrl}" alt="Announcement" onerror="this.style.display='none';this.parentElement.classList.add('image-broken');"></div>` : (!isCompact ? `<div class="announcement-image image-broken"></div>` : '')}
+            <div class="announcement-header">
+              <h3 class="announcement-title">${escapeHtml(announcement.title)}</h3>
+              <span class="announcement-date">${new Date(announcement.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })} ${new Date(announcement.date).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })}</span>
+            </div>
+            <div class="announcement-content preview" data-full="${escapeHtml(contentText)}" data-preview="${escapeHtml(previewText)}">${escapeHtml(previewText)}</div>
+            ${isLongText ? `<button type="button" class="view-more-btn" data-expanded="false" onclick="toggleAnnouncementText(this)">View more</button>` : ''}
+          </div>
+        `}).join('');
+      } else {
+        html += '<div class="no-announcements"><p>No previous announcements.</p></div>';
+      }
+      html += '</div>';
+
+      container.innerHTML = html;
+    } catch (error) {
+      console.error('Error loading announcements:', error);
+    }
+  }
+
+  // Initialize
+  document.addEventListener('DOMContentLoaded', () => {
+    loadAnnouncements();
+    initializeCoolMountainSlider();
+    initializeHeritageSlider();
+    initializeCreativeSoulSlider();
+
+    // Set active navigation
+    document.querySelectorAll('nav a').forEach(link => {
+      if (link.href.includes(window.location.pathname.split('/').pop())) {
+        link.classList.add('active');
+      }
+    });
+
+    // Header scroll effect
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('mainHeader');
+      if (window.pageYOffset > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+  });
+
+  function initializeCoolMountainSlider() {
+    const slider = document.getElementById('coolMountainSlider');
+    const dots = Array.from(document.querySelectorAll('#coolMountainSliderDots .slider-dot'));
+    const images = [
+      '../assets/images/slideimg1.jpg',
+      '../assets/images/slideimg2.jpg',
+      '../assets/images/slideimg3.jpg'
+    ];
+
+    createSlider(slider, dots, images, 'Cool Mountain Escape');
+  }
+
+  function initializeHeritageSlider() {
+    const slider = document.getElementById('heritageSlider');
+    const dots = Array.from(document.querySelectorAll('#heritageSliderDots .slider-dot'));
+    const images = [
+      '../assets/images/slideimg4.jpg',
+      '../assets/images/slideimg5.jpg',
+      '../assets/images/slideimg6.jpg'
+    ];
+
+    createSlider(slider, dots, images, 'Heritage & Local Flavor');
+  }
+
+  function initializeCreativeSoulSlider() {
+    const slider = document.getElementById('creativeSoulSlider');
+    const dots = Array.from(document.querySelectorAll('#creativeSoulSliderDots .slider-dot'));
+    const images = [
+      '../assets/images/slideimg7.jpg',
+      '../assets/images/slideimg8.jpg',
+      '../assets/images/slideimg9.jpg'
+    ];
+
+    createSlider(slider, dots, images, 'Artistic & Creative Soul');
+  }
+
+  function createSlider(slider, dots, images, label) {
+    if (!slider || !dots.length) return;
+
+    let currentIndex = 0;
+    let intervalId = null;
+
+    function showSlide(index) {
+      currentIndex = index % images.length;
+      if (currentIndex < 0) currentIndex = images.length - 1;
+      slider.style.opacity = '0';
+      setTimeout(() => {
+        slider.src = images[currentIndex];
+        slider.alt = `${label} ${currentIndex + 1}`;
+        slider.style.opacity = '1';
+      }, 200);
+
+      dots.forEach((dot, dotIndex) => {
+        dot.classList.toggle('active', dotIndex === currentIndex);
+      });
+    }
+
+    function nextSlide() {
+      showSlide(currentIndex + 1);
+    }
+
+    dots.forEach(dot => {
+      dot.tabIndex = -1;
+    });
+
+    slider.addEventListener('error', () => {
+      slider.src = '../assets/images/baguiobg3.png';
+    });
+
+    showSlide(0);
+    intervalId = setInterval(nextSlide, 4000);
+  }
+</script>
+
+</body>
+</html>
