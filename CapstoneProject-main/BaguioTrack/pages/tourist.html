@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Baguio Track | Tourist Spots</title>
+  <link rel="stylesheet" href="../assets/css/modern.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+  <style>
+    :root {
+      --header-height: 72px;
+    }
+
+      html, body {
+        height: 100%;
+      }
+
+      body {
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        color: #111827;
+        background: url("../assets/images/123.jpg") no-repeat center center fixed;
+        background-size: cover;
+        display: flex;
+        flex-direction: column;
+      }
+
+      main.portal-content {
+        flex: 1 0 auto;
+      }
+
+    a,
+    a:hover,
+    a:focus,
+    a:active{
+      text-decoration:none !important;
+      color:inherit;
+    }
+
+    main.portal-content {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 110px 30px 48px;
+    }
+
+    .page-header {
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(255,255,255,0.96));
+      border-radius: 24px;
+      padding: 40px 42px;
+      margin-bottom: 28px;
+      display: grid;
+      gap: 16px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+    }
+
+    .page-header h1 {
+      margin: 0;
+      font-size: clamp(2.4rem, 3vw, 3.6rem);
+      color: #111827;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+    }
+
+    .page-header p {
+      margin: 0;
+      max-width: 780px;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: #475569;
+    }
+
+    .tourist-layout {
+      display: grid;
+      grid-template-columns: minmax(260px, 320px) 1fr;
+      gap: 30px;
+      align-items: start;
+    }
+
+    .filters-panel {
+      background: #ffffff;
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      position: sticky;
+      top: calc(var(--header-height) + 10px);
+    }
+
+    .filters-panel h2 {
+      margin: 0 0 18px;
+      font-size: 2rem;
+      color: #111827;
+    }
+
+    .filter-group {
+      margin-bottom: 24px;
+    }
+
+    .filter-group label {
+      display: block;
+      margin-bottom: 14px;
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .filter-group input[type="search"] {
+      width: 100%;
+      padding: 16px 18px;
+      border-radius: 18px;
+      border: 1px solid #d1d5db;
+      background: #f8fafc;
+    }
+
+    .checkbox-group {
+      display: grid;
+      gap: 12px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      background: rgba(37, 99, 235, 0.08);
+      font-weight: 600;
+      color: #1f2937;
+    }
+
+    .checkbox-item input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent, #2563eb);
+    }
+
+    .panel-actions {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .panel-actions button {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 20px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .results-panel {
+      display: grid;
+      gap: 22px;
+      align-content: start;
+    }
+
+    .attractions-list {
+      display: grid;
+      gap: 22px;
+      padding-top: 2px;
+    }
+
+    .attraction-card {
+      background: #ffffff;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      padding: 0;
+      margin-bottom: 16px;
+    }
+
+    .attraction-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      min-height: 240px;
+    }
+
+    .attraction-body {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .category-link {
+      display: inline-flex;
+      flex-wrap: wrap;
+      white-space: normal;
+      padding: 10px 16px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.12);
+      color: var(--accent, #2563eb);
+      font-weight: 700;
+      margin-right: 8px;
+      margin-bottom: 8px;
+    }
+
+    .attraction-title {
+      margin: 12px 0 8px;
+      font-size: 1.75rem;
+    }
+
+    .location,
+    .card-description {
+      color: #4b5563;
+    }
+
+    .card-actions {
+      display: flex;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    .card-button {
+      background: var(--accent, #2563eb);
+      color: #fff;
+      padding: 14px 22px;
+      border-radius: 16px;
+      text-decoration: none;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+
+    .card-button:hover {
+      background: var(--accent-light, #3b82f6);
+      transform: translateY(-1px);
+    }
+
+    .card-link {
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      padding: 14px 22px;
+      border-radius: 16px;
+      text-decoration: none;
+      color: var(--accent, #2563eb);
+      transition: background 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card-link:hover {
+      background: rgba(37, 99, 235, 0.08);
+      border-color: var(--accent, #2563eb);
+    }
+
+    .no-results-message {
+      grid-column: 1 / -1;
+      padding: 28px;
+      text-align: center;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 16px;
+      background: #f8fafc;
+      color: #334155;
+      font-size: 16px;
+      margin-top: 24px;
+    }
+
+    .route-preview {
+      display: grid;
+      gap: 10px;
+      margin: 14px 0 18px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08), rgba(14, 165, 233, 0.08));
+      border: 1px solid rgba(37, 99, 235, 0.16);
+    }
+
+    .route-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 7px 12px;
+      background: #ffffff;
+      color: #0f172a;
+      font-size: 0.86rem;
+      font-weight: 700;
+      box-shadow: 0 8px 16px rgba(15, 23, 42, 0.06);
+    }
+
+    .route-pill i {
+      color: var(--accent, #2563eb);
+      font-size: 0.9rem;
+    }
+
+    .card-actions {
+      flex-wrap: wrap;
+    }
+
+    .card-link.commute-trigger {
+      background: #f8fafc;
+      color: #0f172a;
+      border: 1px solid rgba(37, 99, 235, 0.16);
+    }
+
+    .card-link.commute-trigger:hover {
+      background: #eff6ff;
+      border-color: rgba(37, 99, 235, 0.28);
+    }
+
+    .details-modal-backdrop,
+    .commute-modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.72);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 2000;
+    }
+
+    .details-modal-backdrop.active,
+    .commute-modal-backdrop.active {
+      display: flex;
+    }
+
+    .details-modal {
+      width: min(760px, 100%);
+      background: #ffffff;
+      border-radius: 28px;
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.16);
+      overflow: hidden;
+      max-height: min(90vh, 720px);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .details-modal-header {
+      padding: 24px 28px 18px;
+      border-bottom: 1px solid #e5e7eb;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+    }
+
+    .details-close,
+    .commute-close {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      cursor: pointer;
+      color: #0f172a;
+      font-weight: 700;
+      line-height: 1;
+      padding: 4px 8px;
+    }
+
+    .details-modal-body,
+    .commute-modal {
+      padding: 0 28px 28px;
+    }
+
+    .details-content {
+      display: grid;
+      gap: 20px;
+      margin-top: 12px;
+    }
+
+    .details-content h4 {
+      margin: 0;
+      font-size: 1rem;
+      color: #111827;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .details-content p {
+      margin: 0;
+      color: #4b5563;
+      line-height: 1.7;
+    }
+
+    .details-label {
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 6px;
+    }
+
+    .details-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .details-item {
+      background: #f8fafc;
+      border-radius: 16px;
+      padding: 16px;
+    }
+
+    .details-item strong {
+      display: block;
+      margin-bottom: 6px;
+      color: #111827;
+    }
+
+    .commute-modal-backdrop.active {
+      display: flex;
+    }
+
+    .commute-modal {
+      width: min(760px, 100%);
+      max-height: min(86vh, 900px);
+      overflow-y: auto;
+      background: #ffffff;
+      border-radius: 24px;
+      padding: 24px;
+      box-shadow: 0 20px 60px rgba(15, 23, 42, 0.28);
+    }
+
+    .commute-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 16px;
+      margin-bottom: 18px;
+    }
+
+    .commute-modal-header h3 {
+      margin: 0 0 6px;
+      font-size: 1.4rem;
+      color: #0f172a;
+    }
+
+    .commute-modal-header p {
+      margin: 0;
+      color: #475569;
+      font-size: 0.95rem;
+    }
+
+    .commute-close {
+      border: none;
+      background: #f8fafc;
+      color: #334155;
+      border-radius: 999px;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .guide-step {
+      display: grid;
+      gap: 8px;
+      padding: 16px;
+      border-radius: 18px;
+      background: #f8fafc;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      margin-bottom: 12px;
+    }
+
+    .guide-step strong {
+      color: #0f172a;
+    }
+
+    .guide-step span {
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .guide-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      color: var(--accent, #2563eb);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+
+    .guide-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .guide-actions a,
+    .guide-actions button {
+      border: none;
+      border-radius: 14px;
+      padding: 12px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    @media (max-width: 900px) {
+      .filters-panel {
+        position: relative;
+        top: 0;
+      }
+      .attraction-card {
+        grid-template-columns: 1fr;
+      }
+      .attraction-body {
+        padding: 24px;
+      }
+      .attraction-image {
+        min-height: 260px;
+      }
+      .card-actions {
+        flex-wrap: wrap;
+      }
+      .card-button,
+      .card-link {
+        width: 100%;
+        justify-content: center;
+      }
+      .category-link {
+        margin-right: 6px;
+        margin-bottom: 6px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-header {
+        padding: 28px 20px;
+      }
+      .filters-panel {
+        padding: 20px;
+      }
+      .filter-group {
+        margin-bottom: 18px;
+      }
+      .checkbox-item {
+        padding: 12px 14px;
+      }
+      .attraction-body {
+        padding: 20px;
+      }
+      .card-actions {
+        gap: 12px;
+      }
+      .card-button,
+      .card-link {
+        width: 100%;
+      }
+    }
+
+    .guide-actions .secondary {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+
+    .guide-actions .primary {
+      background: var(--accent, #2563eb);
+      color: #ffffff;
+    }
+
+    .guide-note {
+      margin-top: 14px;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(5, 150, 105, 0.1), rgba(59, 130, 246, 0.1));
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    .leaflet-map-card {
+      margin-top: 14px;
+      border-radius: 18px;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.25);
+    }
+
+    .leaflet-map {
+      height: 260px;
+      width: 100%;
+    }
+
+    @media (max-width: 900px) {
+      .tourist-layout {
+        grid-template-columns: 1fr;
+      }
+      .filters-panel {
+        position: relative;
+        top: 0;
+      }
+      .attraction-card {
+        grid-template-columns: 1fr;
+      }
+      .attraction-image {
+        min-height: 260px;
+      }
+      .card-actions {
+        flex-wrap: wrap;
+      }
+      .category-link {
+        margin-right: 6px;
+        margin-bottom: 6px;
+      }
+      .card-button,
+      .card-link {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .page-header {
+        padding: 28px 20px;
+      }
+      .filters-panel {
+        padding: 22px;
+      }
+      .filter-group {
+        margin-bottom: 18px;
+      }
+      .checkbox-item {
+        padding: 12px 14px;
+      }
+      .card-actions {
+        gap: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header id="mainHeader">
+    <div class="header-container">
+      <a href="home.html" class="logo-area"><img src="../assets/images/loggo.png" alt="Baguio Track Logo"><h2>Baguio Track</h2></a>
+      <nav>
+        <a href="home.html">Home</a>
+        <a href="tourist.html" class="active">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+        <div class="nav-profile"><button class="nav-profile-btn" id="profileBtn">Profile</button></div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="portal-content">
+    <section class="tourist-layout">
+      <aside class="filters-panel">
+        <h2>Find Spots</h2>
+        <div class="filter-group">
+          <label for="search-attraction">Search attractions</label>
+          <input id="search-attraction" type="search" placeholder="Search by name, place, or category" />
+        </div>
+        <div class="filter-group">
+          <label>Categories</label>
+          <div class="checkbox-group">
+            <label class="checkbox-item"><input type="checkbox" value="Nature" checked /> Nature</label>
+            <label class="checkbox-item"><input type="checkbox" value="Park" checked /> Park</label>
+            <label class="checkbox-item"><input type="checkbox" value="Landmark" checked /> Landmark</label>
+            <label class="checkbox-item"><input type="checkbox" value="Culture" checked /> Culture</label>
+          </div>
+        </div>
+      </aside>
+
+      <section class="results-panel">
+        <div class="attractions-list">
+          <div class="no-results-message" id="noResultsMessage" style="display:none;">
+            No attractions found. Try a different search term or adjust your categories.
+          </div>
+          <div id="spotsContainer"></div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <div class="commute-modal-backdrop" id="commuteModalBackdrop" aria-hidden="true">
+    <div class="commute-modal" role="dialog" aria-modal="true" aria-labelledby="commuteModalTitle">
+      <div class="commute-modal-header">
+        <div>
+          <h3 id="commuteModalTitle">Commute Guide</h3>
+          <p id="commuteModalSubtitle">A practical jeepney route for your visit.</p>
+        </div>
+        <button class="commute-close" id="closeCommuteModal" type="button" aria-label="Close commute guide">✕</button>
+      </div>
+      <div id="commuteModalContent"></div>
+    </div>
+  </div>
+
+  <div class="details-modal-backdrop" id="detailsModalBackdrop" aria-hidden="true">
+    <div class="details-modal" role="dialog" aria-modal="true" aria-labelledby="detailsModalTitle">
+      <div class="details-modal-header">
+        <div>
+          <h3 id="detailsModalTitle">Tourist Spot Details</h3>
+          <p id="detailsModalSubtitle">Learn more about this attraction.</p>
+        </div>
+        <button class="details-close" id="closeDetailsModal" type="button" aria-label="Close details view">✕</button>
+      </div>
+      <div id="detailsModalContent"></div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+  <script src="../assets/js/header.js"></script>
+<script>
+const commuteData = {
+  'mirador heritage and eco park': {
+    title: 'Mirador Heritage and Eco Park',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Lourdes Dominican V.V.',
+    board: 'Kayang Street Jeepney Terminal',
+    dropOff: 'Mirador Road roadside pull-over (near Jesuit Villa gate)',
+    walk: '3–5 mins uphill walk',
+    walkTime: '3–5 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'The final stretch is uphill, so take it slowly and enjoy the view.',
+    coords: [16.4101478, 120.5786349]
+  },
+  'lourdes grotto': {
+    title: 'Lourdes Grotto',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Lourdes Dominican V.V.',
+    board: 'Kayang Street Jeepney Terminal',
+    dropOff: 'Dominican Road roadside near grotto stairs',
+    walk: '2–4 mins to entrance stairs',
+    walkTime: '2–4 mins',
+    returnTrip: 'Ride Plaza-bound jeep from roadside',
+    note: 'The stairs are the main part of the visit, so comfortable shoes help.',
+    coords: [16.40999, 120.58088]
+  },
+  'diplomat hotel': {
+    title: 'Diplomat Hotel',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Lourdes Dominican V.V.',
+    board: 'Kayang Street Jeepney Terminal',
+    dropOff: 'Dominican Hill Road junction',
+    walk: '5–8 mins uphill walk',
+    walkTime: '5–8 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'The last stretch is uphill, so it is best to take the walk slowly.',
+    coords: [16.404, 120.587]
+  },
+  'botanical garden': {
+    title: 'Botanical Garden',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Leonard Wood Road roadside near gate',
+    walk: '1–2 mins to entrance',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from Leonard Wood Road',
+    note: 'This stop is easy because the gate is close to the roadside.',
+    coords: [16.4150, 120.6130]
+  },
+  'wright park': {
+    title: 'Wright Park',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Pool of Pines roadside stop',
+    walk: '1–3 mins to horse riding area',
+    walkTime: '1–3 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'The stop is close to the park entrance and works well with the Mansion route.',
+    coords: [16.415, 120.617]
+  },
+  'the mansion': {
+    title: 'The Mansion',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Opposite Mansion gate roadside stop',
+    walk: '1–2 mins to gate',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from Outlook Drive',
+    note: 'The walk from the roadside to the gate is short and straightforward.',
+    coords: [16.4128927, 120.6199063]
+  },
+  'good shepherd convent': {
+    title: 'Good Shepherd Convent',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Outlook Drive roadside stop',
+    walk: '3–5 mins uphill walk',
+    walkTime: '3–5 mins',
+    returnTrip: 'Walk back to road, ride Plaza-bound jeep',
+    note: 'The convent is a good add-on after the nearby Mines View route.',
+    coords: [16.42233, 120.62613]
+  },
+  'mines view park': {
+    title: 'Mines View Park',
+    terminal: 'Mines View Terminal',
+    route: 'Baguio Plaza | Mines View V.V.',
+    board: 'Minesview Terminal',
+    dropOff: 'Mines View terminal / parking area',
+    walk: '1–2 mins to viewing deck',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from terminal',
+    note: 'The park is one of the easiest stops because the viewing deck is close by.',
+    coords: [16.4197, 120.6274]
+  },
+  'tam awan village': {
+    title: 'Tam-Awan Village',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Long Long via Tam-Awan V.V.',
+    board: 'Otek Street Jeepney Terminal',
+    dropOff: 'Tacay Road roadside near entrance',
+    walk: '1–2 mins to gate',
+    walkTime: '1–2 mins',
+    returnTrip: 'Ride Plaza-bound jeep from main road',
+    note: 'This is a simple stop because the entrance is close to the roadside.',
+    coords: [16.42997, 120.57663]
+  },
+  'igorot stone kingdom': {
+    title: 'Igorot Stone Kingdom',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | Long Long via Tam-Awan V.V.',
+    board: 'Otek Street Jeepney Terminal',
+    dropOff: 'Long Long Road roadside near entrance',
+    walk: '1–3 mins to gate',
+    walkTime: '1–3 mins',
+    returnTrip: 'Ride Plaza-bound jeep from roadside',
+    note: 'The walk is short, which makes this stop easy to pair with Tam-Awan.',
+    coords: [16.432, 120.575]
+  },
+  'dragon treasure castle': {
+    title: 'Dragon Treasure Castle',
+    terminal: 'Kayang Street Terminal',
+    route: 'Baguio Plaza | San Carlos HTS. NPC V.V.',
+    board: 'Kayang Jeep Terminal',
+    dropOff: 'Irisville Subdivision roadside',
+    walk: '8–12 mins uphill OR shuttle van',
+    walkTime: '8–12 mins',
+    returnTrip: 'Shuttle van back to main jeep route',
+    note: 'This stop needs more walking than the other routes, so a shuttle van can be practical.',
+    coords: [16.422, 120.566]
+  },
+  'bell church': {
+    title: 'Bell Church',
+    terminal: 'Baguio Plaza Terminal',
+    route: 'Baguio Plaza | La Trinidad V.V.',
+    board: 'Baguio Plaza Terminal',
+    dropOff: 'Bell Church Road roadside stop',
+    walk: '3–5 mins to gate',
+    walkTime: '3–5 mins',
+    returnTrip: 'Ride La Trinidad–Baguio jeep',
+    note: 'The short walk from the roadside is manageable for most visitors.',
+    coords: [16.431541, 120.598391]
+  },
+  'camp john hay': {
+    title: 'Camp John Hay',
+    terminal: 'Baguio Plaza Terminal',
+    route: 'Baguio Plaza | Scout Barrio V.V.',
+    board: 'Baguio Plaza Terminal',
+    dropOff: 'Main gate along Loakan Road',
+    walk: '3–10 mins inside area',
+    walkTime: '3–10 mins',
+    returnTrip: 'Ride Scout Barrio / Plaza jeep',
+    note: 'The gate is easy to reach, but the inside of the complex may need more walking.',
+    coords: [16.397029, 120.611360]
+  },
+  'lions head': {
+    title: 'Lions Head',
+    terminal: 'Otek Street Terminal',
+    route: 'Baguio City | Camp 6 V.V.',
+    board: 'Camp 6 Terminal, Otek Street, Baguio City',
+    dropOff: 'Kennon Road roadside pull-over',
+    walk: '0–2 mins (highway shoulder)',
+    walkTime: '0–2 mins',
+    returnTrip: 'Flag returning jeep or bus on Kennon Road',
+    note: 'Take the jeepney from Camp 6 Terminal on Otek Street and ask the driver to drop you off at Lion’s Head.',
+    coords: [16.367, 120.606]
+  }
+};
+
+function normalizeTitle(title) {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim();
+}
+
+function openCommuteModal(data, title) {
+  const modal = document.getElementById('commuteModalBackdrop');
+  const titleEl = document.getElementById('commuteModalTitle');
+  const subtitleEl = document.getElementById('commuteModalSubtitle');
+  const contentEl = document.getElementById('commuteModalContent');
+
+  if (!modal || !titleEl || !subtitleEl || !contentEl) return;
+
+  const mapId = `commuteMap-${Math.random().toString(36).slice(2, 9)}`;
+  titleEl.textContent = data.title || title;
+  const subtitleParts = [data.route, data.fare, data.travelTime].filter(Boolean);
+  subtitleEl.textContent = subtitleParts.join(' • ');
+
+  let modalHtml = `
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-bus"></i> Jeep Route</div>
+      <strong>Route:</strong>
+      <span>${data.route}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-location-dot"></i> Board</div>
+      <strong>Board at:</strong>
+      <span>${data.board}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-stop-circle"></i> Drop-off</div>
+      <strong>Get off at:</strong>
+      <span>${data.dropOff}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-person-walking"></i> Walk</div>
+      <strong>Walking time:</strong>
+      <span>${data.walk}</span>
+    </div>
+    <div class="guide-step">
+      <div class="guide-kicker"><i class="fa-solid fa-rotate-left"></i> Return</div>
+      <strong>Going back:</strong>
+      <span>${data.returnTrip}</span>
+    </div>
+  `;
+
+  if (data.note) {
+    modalHtml += `
+      <div class="guide-note">${data.note}</div>
+    `;
+  }
+
+  modalHtml += `
+    <div class="leaflet-map-card">
+      <div id="${mapId}" class="leaflet-map"></div>
+    </div>
+    <div class="guide-actions">
+      <a class="primary" href="jeepterminal.html?attraction=${encodeURIComponent(data.title || title)}${data.terminal ? '&terminal=' + encodeURIComponent(data.terminal) : ''}${Array.isArray(data.coords) && data.coords.length === 2 ? '&spotLat=' + encodeURIComponent(data.coords[0]) + '&spotLng=' + encodeURIComponent(data.coords[1]) : ''}"><i class="fa-solid fa-bus"></i> Go to Terminal</a>
+    </div>
+  `;
+
+  contentEl.innerHTML = modalHtml;
+
+  modal.classList.add('active');
+  document.body.classList.add('modal-open');
+
+  setTimeout(() => renderLeafletMap(data, mapId), 80);
+}
+
+function renderLeafletMap(data, mapId) {
+  if (!window.L) return;
+
+  const container = document.getElementById(mapId);
+  if (!container) return;
+
+  const terminalCoords = getTerminalCoords(data.terminal);
+  const attractionCoords = Array.isArray(data.coords) && data.coords.length === 2 ? data.coords : null;
+  if (!terminalCoords || !attractionCoords) {
+    container.innerHTML = `
+      <div class="leaflet-map-empty">
+        <p>${!terminalCoords ? 'Terminal not available for this route.' : 'Destination coordinates are missing. Please add latitude and longitude in the Admin Panel or provide a valid location.'}</p>
+      </div>
+    `;
+    return;
+  }
+
+  const map = L.map(container, { zoomControl: true, scrollWheelZoom: false }).setView(terminalCoords, 13);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const terminalIcon = L.divIcon({
+    html: '<i class="fa-solid fa-bus" style="color:#ffffff; font-size:14px;"></i>',
+    className: 'leaflet-terminal-icon',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+
+  const spotIcon = L.divIcon({
+    html: '<i class="fa-solid fa-location-dot" style="color:#ffffff; font-size:14px;"></i>',
+    className: 'leaflet-spot-icon',
+    iconSize: [28, 28],
+    iconAnchor: [14, 14]
+  });
+
+  L.marker(terminalCoords, { icon: terminalIcon }).addTo(map).bindPopup(`<b>${data.terminal}</b><br>Jeepney terminal`).openPopup();
+  L.marker(attractionCoords, { icon: spotIcon }).addTo(map).bindPopup(`<b>${data.title}</b><br>${data.dropOff}`).openPopup();
+
+  const routeUrl = `https://router.project-osrm.org/route/v1/foot/${terminalCoords[1]},${terminalCoords[0]};${attractionCoords[1]},${attractionCoords[0]}?overview=full&geometries=geojson`;
+
+  fetch(routeUrl)
+    .then((response) => response.json())
+    .then((response) => {
+      if (!response.routes || !response.routes.length) return;
+      const route = response.routes[0];
+      const coordinates = route.geometry.coordinates.map((point) => [point[1], point[0]]);
+      L.polyline(coordinates, { color: '#2563eb', weight: 6, opacity: 0.9 }).addTo(map);
+      map.fitBounds([[terminalCoords[0], terminalCoords[1]], [attractionCoords[0], attractionCoords[1]]], { padding: [28, 28] });
+    })
+    .catch(() => {
+      map.fitBounds([[terminalCoords[0], terminalCoords[1]], [attractionCoords[0], attractionCoords[1]]], { padding: [28, 28] });
+    });
+
+  setTimeout(() => map.invalidateSize(), 120);
+}
+
+function getTerminalCoords(terminal) {
+  const terminalMap = {
+    'Mines View Terminal': [16.4119181, 120.5972157],
+    'Baguio Plaza Terminal': [16.4126522, 120.5945013],
+    'Kayang Street Terminal': [16.4147067, 120.5950004],
+    'Otek Street Terminal': [16.4113013, 120.5919427]
+  };
+
+  return terminalMap[terminal] || null;
+}
+
+function closeCommuteModal() {
+  const modal = document.getElementById('commuteModalBackdrop');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+  }
+}
+
+function attachCommuteGuides() {
+  const commuteButtons = document.querySelectorAll('.card-link.commute-trigger');
+  commuteButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const index = parseInt(event.currentTarget.getAttribute('data-spot-index'), 10);
+      const spot = loadSpotsFromStorage()[index];
+      if (!spot) return;
+      const data = getSpotCommuteData(spot);
+      openCommuteModal(data, spot.name);
+    });
+  });
+}
+
+function attachDetailsHandlers() {
+  const detailButtons = document.querySelectorAll('.details-trigger');
+  detailButtons.forEach(button => {
+    button.addEventListener('click', (event) => {
+      const index = parseInt(event.currentTarget.getAttribute('data-spot-index'), 10);
+      const detailsOnly = event.currentTarget.getAttribute('data-details-only') === 'true';
+      const spot = loadSpotsFromStorage()[index];
+      if (!spot) return;
+      if (detailsOnly) {
+        event.preventDefault();
+        openDetailsModal(spot);
+      }
+    });
+  });
+}
+
+function openDetailsModal(spot) {
+  const modal = document.getElementById('detailsModalBackdrop');
+  const titleEl = document.getElementById('detailsModalTitle');
+  const subtitleEl = document.getElementById('detailsModalSubtitle');
+  const contentEl = document.getElementById('detailsModalContent');
+  if (!modal || !titleEl || !subtitleEl || !contentEl) return;
+  titleEl.textContent = spot.name;
+  subtitleEl.textContent = spot.location || 'Tourist Spot';
+  const categoriesHtml = spot.categories?.map(c => `<span class="category-link" style="margin-bottom:8px;">${c}</span>`).join(' ') || '';
+  const commuteHtml = spot.terminal || spot.route || spot.board || spot.dropOff || spot.walk || spot.returnTrip ? `
+    <div class="details-item">
+      <strong>Commute Guide</strong>
+      <p>${spot.board ? `<strong>Board at:</strong> ${spot.board}<br/>` : ''}${spot.terminal ? `<strong>Terminal:</strong> ${spot.terminal}<br/>` : ''}${spot.dropOff ? `<strong>Drop-off:</strong> ${spot.dropOff}<br/>` : ''}${spot.route ? `<strong>Route:</strong> ${spot.route}<br/>` : ''}${spot.walk ? `<strong>Walk:</strong> ${spot.walk}<br/>` : ''}${spot.returnTrip ? `<strong>Return:</strong> ${spot.returnTrip}` : ''}</p>
+    </div>
+  ` : '';
+
+  contentEl.innerHTML = `
+    <div class="details-content">
+      <div class="details-item">
+        <strong>Description</strong>
+        <p>${spot.desc || 'No description available.'}</p>
+      </div>
+      <div class="details-item">
+        <strong>Location</strong>
+        <p>${spot.location || 'Location not provided.'}</p>
+      </div>
+      <div class="details-item">
+        <strong>Page</strong>
+        <p>${spot.page || 'No page link provided.'}</p>
+      </div>
+      ${commuteHtml}
+      ${spot.note ? `<div class="details-item"><strong>Note</strong><p>${spot.note}</p></div>` : ''}
+    </div>
+  `;
+
+  modal.classList.add('active');
+  document.body.classList.add('modal-open');
+}
+
+function closeDetailsModal() {
+  const modal = document.getElementById('detailsModalBackdrop');
+  if (modal) {
+    modal.classList.remove('active');
+    document.body.classList.remove('modal-open');
+  }
+}
+
+// Attraction Filtering System
+function filterAttractions() {
+  const searchText = document.getElementById('search-attraction').value.toLowerCase().trim();
+  
+  // Get selected categories
+  const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+  const selectedCats = [];
+  checkboxes.forEach(cb => {
+    if (cb.checked) {
+      selectedCats.push(cb.value);
+    }
+  });
+  
+  // Filter each card
+  const cards = document.querySelectorAll('.attraction-card');
+  let visibleCount = 0;
+
+  cards.forEach(card => {
+    const categorySpans = card.querySelectorAll('.category-link');
+    const titleH2 = card.querySelector('.attraction-title');
+    const descP = card.querySelector('.card-description');
+    
+    const cardCategories = Array.from(categorySpans).map(span => span.textContent.trim());
+    const cardCategoryText = cardCategories.join(' ');
+    const cardTitle = titleH2 ? titleH2.textContent.toLowerCase() : '';
+    const cardDesc = descP ? descP.textContent.toLowerCase() : '';
+    
+    // Check if category matches (any of the card's categories)
+    let categoryMatch = false;
+    if (selectedCats.length === 0) {
+      categoryMatch = true;
+    } else {
+      categoryMatch = cardCategories.some(cat => selectedCats.includes(cat));
+    }
+    
+    // Check if search matches
+    let searchMatch = false;
+    if (searchText === '') {
+      searchMatch = true;
+    } else {
+      searchMatch = cardTitle.includes(searchText) || 
+                   cardDesc.includes(searchText) || 
+                   cardCategoryText.toLowerCase().includes(searchText);
+    }
+    
+    // Show or hide card
+    if (categoryMatch && searchMatch) {
+      card.style.display = 'grid';
+      visibleCount += 1;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const noResultsMessage = document.getElementById('noResultsMessage');
+  if (noResultsMessage) {
+    noResultsMessage.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+}
+
+function clearAllFilters() {
+  document.getElementById('search-attraction').value = '';
+  
+  const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+  checkboxes.forEach(cb => {
+    cb.checked = true;
+  });
+  
+  filterAttractions();
+}
+
+// ===== DYNAMIC SPOT CARDS FROM ADMIN DATA =====
+const DEFAULT_SPOTS = [
+  { name: "Mirador Heritage And Eco Park", categories: ["Nature","Park"], page: "mirador.html", image: "https://i.pinimg.com/736x/11/50/aa/1150aa2cd209123f65ae4af4bb5911f9.jpg", location: "Mirador Hill, Baguio City", desc: "A popular spot for tourists and locals alike, who come to enjoy the stunning views of Baguio City and the surrounding mountains and is also home to a bamboo grove, rock formations, and more." },
+  { name: "Botanical Garden", categories: ["Nature","Park"], page: "botanical.html", image: "../assets/images/botanicalgarden.jpg", location: "Leonard Wood Road, Baguio City", desc: "A peaceful botanical sanctuary with towering pines, flower gardens, and cultural sculptures perfect for relaxing walks and photo spots." },
+  { name: "Mines View Park", categories: ["Park","Landmark"], page: "minesview.html", image: "../assets/images/minesviewpark.jpg", location: "Mines View Road, Baguio City", desc: "A popular viewpoint offering sweeping mountain vistas, historic mining landscapes, and shops selling local crafts and treats." },
+  { name: "The Mansion", categories: ["Landmark"], page: "mansion.html", image: "../assets/images/mansion.jpg", location: "Leonard Wood Road, Baguio City", desc: "The official summer residence of the Philippine President, known for its grand gate, manicured lawns, and historical significance." },
+  { name: "Camp John Hay", categories: ["Nature","Park","Landmark"], page: "johnhay.html", image: "../assets/images/camp.jpg", location: "Loakan Road, Baguio City", desc: "A historic leisure complex with pine forests, trails, cafés, and heritage sites perfect for outdoor exploration." },
+  { name: "Lourdes Grotto", categories: ["Landmark","Culture"], page: "grotto.html", image: "../assets/images/grotto.jpg", location: "Dominican Hill Road, Mirador Hill, Baguio City", desc: "A beloved pilgrimage site featuring the Virgin Mary statue atop 252 steps and panoramic city views for reflective moments." },
+  { name: "Good Shepherd Convent", categories: ["Culture"], page: "goodshepherd.html", image: "https://i.pinimg.com/1200x/18/a5/28/18a5289c26005e8d1480cb4aef29950b.jpg", location: "15 Gibraltar Road, Mines View, Baguio City", desc: "Famous for ube jam and local pasalubong, this convent is a scenic stop for shopping, snacks, and quiet reflection." },
+  { name: "Lions Head", categories: ["Landmark"], page: "lionshead.html", image: "../assets/images/lion.webp", location: "Kennon Road, near Barangay Calasungay, Tuba, Benguet", desc: "The Lion's Head along Kennon Road is a famous roadside landmark in Benguet, Philippines, carved into the mountainside." },
+  { name: "Diplomat Hotel", categories: ["Landmark","Culture"], page: "diplomat.html", image: "https://i.pinimg.com/1200x/90/ad/e5/90ade57f70358c88c020cb78fd4d4b00.jpg", location: "Dominican Hill, Diplomat Road, Baguio, 2600 Benguet", desc: "This hotel holds a lot of history, from being a seminary to a hotel, and now a popular tourist attraction known for its architecture and ghost stories." },
+  { name: "Wright Park", categories: ["Park","Landmark"], page: "wrightpark.html", image: "https://i.pinimg.com/1200x/9e/a1/9d/9ea19da330f29c25a4f5f920f46e466d.jpg", location: "The Mansion, Romulo Dr, Baguio, Benguet", desc: "The park is a favorite spot for tourists and locals to enjoy leisurely walks, take photos, and experience the cool mountain air." },
+  { name: "Igorot Stone Kingdom", categories: ["Landmark","Culture"], page: "igorot.html", image: "https://i.pinimg.com/736x/f2/48/81/f248816e6f5950cb5ab481af89c95e5d.jpg", location: "Long Long Road, Pinsao Proper, Baguio City", desc: "The park celebrates Igorot culture through the traditional riprap stone-laying technique." },
+  { name: "Dragon Treasure Castle", categories: ["Landmark","Culture"], page: "dragon.html", image: "https://lakbaypinas.com/wp-content/uploads/2025/02/471333542_122116129676614614_476453595541820013_n-1536x864.jpg", location: "Block 8, Irisville Subdivision, Baguio City, Benguet", desc: "Dragon Treasure Castle is worth visiting if you want dramatic photos, fantasy-style architecture, and a short Baguio side trip." },
+  { name: "Tam-Awan Village", categories: ["Culture"], page: "tamawan.html", image: "https://i.pinimg.com/1200x/35/67/2c/35672c91f7f83f36499f5117c76f78d1.jpg", location: "Long Long Benguet Rd, Baguio City, Benguet", desc: "Tam-Awan Village holds its true values and culture of the Cordilleran heritage." },
+  { name: "Bell Church", categories: ["Landmark","Culture"], page: "bellchurch.html", image: "https://i.pinimg.com/736x/33/45/08/334508be47f39d2f03b6ba791a11a97e.jpg", location: "Bell Church Rd, La Trinidad, Benguet", desc: "Bell Church is a Chinese temple known for its colorful architecture, serene gardens, and cultural significance." }
+];
+
+const TERMINAL_MAP = {
+  'Mirador Heritage And Eco Park': 'Kayang Street Terminal',
+  'Botanical Garden': 'Mines View Terminal',
+  'Mines View Park': 'Mines View Terminal',
+  'The Mansion': 'Mines View Terminal',
+  'Camp John Hay': 'Baguio Plaza Terminal',
+  'Lourdes Grotto': 'Kayang Street Terminal',
+  'Good Shepherd Convent': 'Mines View Terminal',
+  'Lions Head': 'Otek Street Terminal',
+  'Diplomat Hotel': 'Kayang Street Terminal',
+  'Wright Park': 'Mines View Terminal',
+  'Igorot Stone Kingdom': 'Kayang Street Terminal',
+  'Dragon Treasure Castle': 'Kayang Street Terminal',
+  'Tam-Awan Village': 'Kayang Street Terminal',
+  'Bell Church': 'Baguio Plaza Terminal'
+};
+
+function loadSpotsFromStorage() {
+  let spotsData;
+  try {
+    const saved = localStorage.getItem('adminSpotsData');
+    if (saved) {
+      spotsData = JSON.parse(saved);
+    } else {
+      spotsData = JSON.parse(JSON.stringify(DEFAULT_SPOTS));
+    }
+  } catch(e) {
+    spotsData = JSON.parse(JSON.stringify(DEFAULT_SPOTS));
+  }
+  return spotsData.filter(spot => !spot.archived);
+}
+
+function renderSpotCards() {
+  const spots = loadSpotsFromStorage();
+  const container = document.getElementById('spotsContainer');
+  if (!container) return;
+  
+  let html = '';
+  
+  spots.forEach((spot, index) => {
+    const terminal = spot.terminal || TERMINAL_MAP[spot.name] || '';
+    const imageSrc = spot.image || 'https://via.placeholder.com/320x240';
+    const hasCommuteGuide = Boolean(terminal || spot.board || spot.dropOff || spot.route || spot.walk || spot.returnTrip || commuteData[normalizeTitle(spot.name)]);
+
+    const detailsHref = spot.page ? spot.page : '#';
+    const detailsOnly = !spot.page ? ' data-details-only="true"' : '';
+    html += `
+      <div class="attraction-card" data-spot-index="${index}">
+        <img class="attraction-image" src="${imageSrc}" alt="${spot.name}" onerror="this.src='https://via.placeholder.com/320x240'">
+        <div class="attraction-body">
+          <div>
+            ${spot.categories.map(c => `<span class="category-link">${c}</span>`).join(' ')}
+            <h2 class="attraction-title">${spot.name}</h2>
+            <p class="location">${spot.location || ''}</p>
+            <p class="card-description">${spot.desc || ''}</p>
+          </div>
+          <div class="card-actions">
+            <a class="card-button details-trigger" href="${detailsHref}" data-spot-index="${index}"${detailsOnly}>View Details</a>
+            ${hasCommuteGuide ? `<button type="button" class="card-link commute-trigger" data-spot-index="${index}"><i class="fa-solid fa-route"></i> Commute Guide</button>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+}
+
+function getSpotCommuteData(spot) {
+  const key = normalizeTitle(spot.name);
+  const defaultData = commuteData[key] || {};
+  return {
+    title: spot.name,
+    terminal: spot.terminal || defaultData.terminal || TERMINAL_MAP[spot.name] || '',
+    route: spot.route || defaultData.route || '',
+    board: spot.board || defaultData.board || '',
+    dropOff: spot.dropOff || defaultData.dropOff || '',
+    walk: spot.walk || defaultData.walk || '',
+    walkTime: spot.walkTime || defaultData.walkTime || '',
+    returnTrip: spot.returnTrip || defaultData.returnTrip || '',
+    note: spot.note || defaultData.note || '',
+    coords: spot.coords || defaultData.coords || null
+  };
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+  renderSpotCards();
+  
+  // Header scroll
+  const header = document.getElementById('mainHeader') || document.querySelector('header');
+  window.addEventListener('scroll', () => {
+    if (!header) return;
+    if (window.pageYOffset > 50) header.classList.add('scrolled'); else header.classList.remove('scrolled');
+  });
+
+  // Setup filter event listeners
+  const searchBox = document.getElementById('search-attraction');
+  if (searchBox) {
+    searchBox.addEventListener('input', filterAttractions);
+    searchBox.addEventListener('change', filterAttractions);
+  }
+
+  const checkboxes = document.querySelectorAll('.checkbox-group input[type="checkbox"]');
+  checkboxes.forEach(checkbox => {
+    checkbox.addEventListener('change', filterAttractions);
+  });
+
+  document.getElementById('closeCommuteModal')?.addEventListener('click', closeCommuteModal);
+  document.getElementById('commuteModalBackdrop')?.addEventListener('click', (event) => {
+    if (event.target.id === 'commuteModalBackdrop') {
+      closeCommuteModal();
+    }
+  });
+
+  document.getElementById('closeDetailsModal')?.addEventListener('click', closeDetailsModal);
+  document.getElementById('detailsModalBackdrop')?.addEventListener('click', (event) => {
+    if (event.target.id === 'detailsModalBackdrop') {
+      closeDetailsModal();
+    }
+  });
+
+  attachCommuteGuides();
+  attachDetailsHandlers();
+
+  // Initial filter run
+  filterAttractions();
+});
+</script>
+</body>
+</html>
+

@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Good Shepherd Convent | Baguio Track</title>
+
+<link rel="stylesheet" href="../assets/css/modern.css" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="../assets/js/header.js"></script>
+<!-- LEAFLET GIS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+<style>
+:root {
+  --header-height: 84px;
+}
+
+body {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  color: var(--text-primary);
+  background: linear-gradient(180deg, #f8fafc 0%, #f3f4f6 100%);
+  padding-top: var(--header-height);
+}
+
+a {
+  text-decoration: none;
+}
+
+main {
+  max-width: 1200px;
+  margin: 0 auto 36px;
+  padding: 0 24px 32px;
+}
+
+.page-shell {
+  display: grid;
+  gap: 24px;
+}
+
+.hero-card {
+  display: grid;
+  grid-template-columns: 1.25fr 0.95fr;
+  gap: 24px;
+  background: rgba(255,255,255,0.96);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+}
+
+.hero-media img {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  border-radius: 18px;
+  cursor: pointer;
+  display: block;
+}
+
+.hero-meta {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.kicker {
+  display: inline-flex;
+  width: max-content;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.page-title {
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.page-subtitle {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+
+.info-list {
+  display: grid;
+  gap: 8px;
+  padding-left: 18px;
+  margin: 0;
+  color: #4b5563;
+  list-style: none;  list-style: none; }
+    .info-list li { list-style: none; }
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 24px;
+}
+
+.card {
+  background: rgba(255,255,255,0.96);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.card h3 {
+  margin: 0 0 12px;
+  color: var(--text-primary);
+  font-size: 18px;
+}
+
+.card p,
+.card li {
+  color: #4b5563;
+  line-height: 1.7;
+}
+
+.map-frame {
+  height: 340px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+#realMap {
+  width: 100%;
+  height: 100%;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: #fff !important;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.back-link:hover {
+  background: var(--accent-light);
+}
+
+@media (max-width: 900px) {
+  body {
+    padding-top: 112px;
+  }
+
+  .hero-card,
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-media img {
+    height: 260px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header id="mainHeader">
+  <div class="header-container">
+    <a href="home.html" class="logo-area">
+      <img src="../assets/images/loggo.png" alt="Baguio Track Logo">
+      <h2>Baguio Track</h2>
+    </a>
+    <nav>
+      <a href="home.html">Home</a>
+      <a href="tourist.html" class="active">Tourist Spots</a>
+      <a href="jeepterminal.html">Terminals</a>
+      <div class="nav-profile">
+        <button class="nav-profile-btn" id="profileBtn">Profile</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <div class="page-shell">
+    <section class="hero-card">
+      <div class="hero-media">
+        <img src="../assets/images/goods.jpg" id="openImage" alt="Good Shepherd Convent">
+      </div>
+      <div class="hero-meta">
+        <span class="kicker">Culture</span>
+        <h1 class="page-title">Good Shepherd Convent</h1>
+        <p class="page-subtitle">Home of Baguio’s famous ube jam and a peaceful convent supporting local youth through scholarship programs.</p>
+        <ul class="info-list">
+          <li><strong>📍 Location:</strong> 15 Gibraltar Road, Mines View, Baguio City</li>
+          <li><strong>🕕 Operating Hours:</strong> 8:00 AM – 4:00 PM</li>
+          <li><strong>💰 Entry Fee:</strong> Free</li>
+          <li><strong>🎁 Famous For:</strong> Ube Jam, Strawberry Jam, Peanut Brittle</li>
+        </ul>
+      </div>
+    </section>
+
+        <div class="gallery-urls" data-img-1="../assets/images/goods.jpg" data-img-2="https://lh3.googleusercontent.com/gps-cs-s/APNQkAFHv5zwa6_8KPD0OJaqMyR2xuJApIyC-VW_1DRbqiGYhb0fNGh3GJTdKWKkLZAJXgzQ4PueSvQW8rdHP0kArSxE_1U6RS7BNb46mSjqu6bME_hAlTxQtWaBDBpO6iiM_aThPqgo=s680-w680-h510-rw" data-img-3="https://lh3.googleusercontent.com/gps-cs-s/APNQkAEHBpSp_5wFqUtlESy4IWU7HwTLSJH6uAupOQMpPtMEQC9aPtY1hNFFaezso6LEGAyUDY2-2Zzx6LOo7-xKXsw-am4lBXvDbAPhG4jyzaVguaTDY4jBmm3cuLKJPifaSpESxOM=s680-w680-h510-rw" data-img-4="https://lh3.googleusercontent.com/gps-cs-s/APNQkAGIJwJ7nGUPxnrlOm3Bgwh_cJOfcTTwOJ2ZeH6_-aTx2chXPiPkziYpSoXCj9Bw2A4Pv-nF0Nc5teAFNNVsM3kQD0gwJVnwlPqbBsjrToWXh65tUzDX4f6-lYxaGBy1Y7Ga5gK9=s680-w680-h510-rw" data-img-5="https://lh3.googleusercontent.com/gps-cs-s/APNQkAG67c84DSHE-_wtsjqm8G6xbSlFWQDchpqWZ-AserhXzc5weZFbsRYy8DH0xw7T0YCA5Dhw1bT3VL2SMFVMtgZHTfJT5sH1JcAUtnW_2nVuUeoDO8C9egrsUI4AmolwMBEwtPeq=s680-w680-h510-rw"></div>
+
+    <section class="detail-grid">
+      <div class="card">
+        <h3>About Good Shepherd Convent</h3>
+        <p>The Good Shepherd Convent is known across the Philippines for its delicious local products, including ube jam, strawberry jam, and peanut brittle. Each purchase helps support the education of Cordillera youth through the Good Shepherd Scholarship Program.</p>
+      </div>
+
+      <div class="card">
+        <h3>Nearby Spots & Attractions</h3>
+        <ul class="info-list">
+          <li>🌸 Mines View Park (5 mins walk)</li>
+          <li>🛍️ Mines View Souvenir Stalls</li>
+          <li>☕ Coffee Shops along Outlook Drive</li>
+          <li>🐎 Horseback Riding Area nearby</li>
+        </ul>
+        
+      </div>
+    </section>
+
+    <section class="card">
+      <h3>Map Location</h3>
+      <p>The map below highlights the convent’s exact location and nearby access points for your visit.</p>
+      <div class="map-frame">
+        <div id="realMap"></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+  </div>
+
+  
+
+</main>
+
+<!-- LIGHTBOX POPUP -->
+<div id="imgPopup">
+  <span id="closePopup">&times;</span>
+  <img src="../assets/images/goods.jpg" alt="Good Shepherd Convent">
+</div>
+
+<!-- GIS SCRIPT -->
+<script>
+// Lightbox
+const popup = document.getElementById("imgPopup");
+const openImg = document.getElementById("openImage");
+const closePopup = document.getElementById("closePopup");
+
+if (openImg && popup) {
+  openImg.onclick = () => popup.style.display = "flex";
+}
+
+if (closePopup && popup) {
+  closePopup.onclick = () => popup.style.display = "none";
+}
+
+if (popup) {
+  popup.onclick = (e) => {
+    if (e.target === popup) popup.style.display = "none";
+  };
+}
+
+// Leaflet GIS Map
+const realMap = document.getElementById('realMap');
+if (realMap) {
+  var map = L.map(realMap).setView([16.42233, 120.62613], 17);
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19
+  }).addTo(map);
+
+  L.marker([16.42233, 120.62613])
+    .addTo(map)
+    .bindPopup("<b>Good Shepherd Convent</b><br>15 Gibraltar Rd, Baguio City")
+    .openPopup();
+}
+</script>
+
+  <footer>
+    <div class="footer-content">
+      <div>
+        <h3>Baguio Track</h3>
+        <p>Contact us: dotcarbtrack@gmail.com</p>
+      </div>
+      <div class="footer-links">
+        <a href="home.html">Home</a>
+        <a href="tourist.html">Tourist Spots</a>
+        <a href="jeepterminal.html">Terminals</a>
+      </div>
+      <div class="footer-bottom">© <span id="year"></span> Baguio Track</div>
+    </div>
+  </footer>
+
+  <script>document.getElementById('year')?.appendChild(document.createTextNode(new Date().getFullYear()));</script>
+
+</body>
+</html>
+
+
+
+
