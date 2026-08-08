@@ -199,7 +199,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDPFnyJC66A-HQC3dKCQQ4SobAFRezx7fU",
@@ -214,6 +214,37 @@
     const auth = getAuth(app);
 
     const ADMIN_EMAIL = "dotcarbtrack@gmail.com";
+
+    onAuthStateChanged(auth, async (user) => {
+      if (user && user.email?.toLowerCase() === ADMIN_EMAIL) {
+        await syncUserToDatabase(user, 'admin');
+        localStorage.setItem('isAdminLoggedIn', 'true');
+        localStorage.setItem('adminEmail', user.email.toLowerCase());
+        localStorage.setItem('adminToken', user.uid);
+        window.location.href = 'admin.html';
+      }
+    });
+
+    const syncUserToDatabase = async (user, role = "user") => {
+      try {
+        const response = await fetch("../api/users.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email?.toLowerCase(),
+            name: user.displayName || user.email || "Firebase User",
+            role
+          })
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          console.error("Admin user sync failed", data);
+        }
+      } catch (error) {
+        console.error("Admin user sync failed", error);
+      }
+    };
 
     document.getElementById("googleSignInBtn").addEventListener("click", async (e) => {
       e.preventDefault();
@@ -237,6 +268,8 @@
           alert(`❌ Access Denied\n\nEmail: ${userEmail}\n\nOnly ${ADMIN_EMAIL} is authorized to access the admin portal.`);
           return;
         }
+
+        await syncUserToDatabase(user, "admin");
 
         // Set admin session
         localStorage.setItem("isAdminLoggedIn", "true");

@@ -176,7 +176,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDPFnyJC66A-HQC3dKCQQ4SobAFRezx7fU",
@@ -190,12 +190,42 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        await syncUserToDatabase(user, 'user');
+        window.location.href = 'home.html';
+      }
+    });
+
+    const syncUserToDatabase = async (user, role = "user") => {
+      try {
+        const response = await fetch("../api/users.php", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: user.email?.toLowerCase(),
+            name: user.displayName || user.email || "Firebase User",
+            role
+          })
+        });
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          console.error("User sync failed", data);
+        }
+      } catch (error) {
+        console.error("User sync failed", error);
+      }
+    };
+
     document.getElementById("googleSignUpBtn").addEventListener("click", async (e) => {
       e.preventDefault();
       try {
         const provider = new GoogleAuthProvider();
         const result = await signInWithPopup(auth, provider);
         const user = result.user;
+
+        await syncUserToDatabase(user, "user");
 
         const regCount = parseInt(localStorage.getItem("registeredUsers") || "0");
         localStorage.setItem("registeredUsers", regCount + 1);
