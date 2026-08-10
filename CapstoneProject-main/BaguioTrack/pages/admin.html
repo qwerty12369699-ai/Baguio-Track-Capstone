@@ -1,0 +1,1454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Baguio Track | Admin Dashboard</title>
+  <style>
+    .admin-inline-actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .archive-section { margin-top:16px; padding-top:14px; border-top:1px solid var(--admin-border); }
+    .archive-item { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 0; border-bottom:1px solid var(--admin-border); }
+    .archive-item:last-child { border-bottom:none; }
+    .archive-meta { color:var(--admin-text-muted); font-size:12px; }
+  </style>
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="admin-wrapper">
+  
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="admin-sidebar-header">
+      <img src="../assets/images/loggo.png" alt="Logo" class="admin-sidebar-logo">
+      <div>
+        <h2 class="admin-sidebar-title">Baguio Track</h2>
+        <span class="admin-sidebar-badge">Admin Panel</span>
+      </div>
+    </div>
+    <nav class="admin-nav">
+      <div class="admin-nav-section">Main</div>
+      <button class="admin-nav-item active" data-page="dashboard"><i class="fas fa-th-large"></i> Dashboard</button>
+      <button class="admin-nav-item" data-page="spots"><i class="fas fa-map-marker-alt"></i> Tourist Spots</button>
+      <button class="admin-nav-item" data-page="announcements"><i class="fas fa-bullhorn"></i> Announcements</button>
+      
+      <div class="admin-nav-section">Engagement</div>
+      <button class="admin-nav-item" data-page="feedback"><i class="fas fa-comments"></i> Feedback</button>
+      <button class="admin-nav-item" data-page="analytics"><i class="fas fa-chart-bar"></i> Analytics</button>
+      
+      <div class="admin-nav-section">System</div>
+      <button class="admin-nav-item" data-page="activity"><i class="fas fa-history"></i> Activity Log</button>
+      <button class="admin-nav-item" data-page="settings"><i class="fas fa-cog"></i> Settings</button>
+    </nav>
+  </aside>
+
+  
+  <main class="admin-main">
+    
+    <div class="admin-topbar">
+      <div class="admin-topbar-left">
+        <button class="toggle-sidebar" id="toggleSidebar"><i class="fas fa-bars"></i></button>
+        <h1 class="admin-topbar-title" id="pageTitle">Dashboard</h1>
+      </div>
+      <div class="admin-topbar-right">
+        <span style="font-size:13px;color:var(--admin-text-muted);" id="adminEmailDisplay"></span>
+        <button class="admin-topbar-btn" id="refreshStatsBtn"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <button class="admin-topbar-btn danger" id="adminLogoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+      </div>
+    </div>
+
+    <div class="admin-content">
+      
+      <div class="admin-page active" id="page-dashboard">
+        <div class="admin-page-header">
+          <div>
+            <h2>Dashboard Overview</h2>
+            <p>Real-time summary of your Baguio Track platform.</p>
+          </div>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Tourist Spots</span>
+              <div class="stat-card-icon green"><i class="fas fa-map-marker-alt"></i></div>
+            </div>
+            <p class="stat-card-value" id="statSpots">14</p>
+            <div class="stat-card-change up"><i class="fas fa-check-circle"></i> Managed in system</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Announcements</span>
+              <div class="stat-card-icon yellow"><i class="fas fa-bullhorn"></i></div>
+            </div>
+            <p class="stat-card-value" id="statAnnouncements">0</p>
+            <div class="stat-card-change up"><i class="fas fa-arrow-up"></i> Published</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Feedback Messages</span>
+              <div class="stat-card-icon purple"><i class="fas fa-comments"></i></div>
+            </div>
+            <p class="stat-card-value" id="statFeedback">0</p>
+            <div class="stat-card-change up"><i class="fas fa-arrow-up"></i> From users</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Total Page Visits</span>
+              <div class="stat-card-icon cyan"><i class="fas fa-eye"></i></div>
+            </div>
+            <p class="stat-card-value" id="statPageVisits">0</p>
+            <div class="stat-card-change up"><i class="fas fa-arrow-up"></i> All-time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Daily Visitors</span>
+              <div class="stat-card-icon blue"><i class="fas fa-users"></i></div>
+            </div>
+            <p class="stat-card-value" id="statDaily">0</p>
+            <div class="stat-card-change up"><i class="fas fa-calendar-day"></i> Today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">System Status</span>
+              <div class="stat-card-icon red"><i class="fas fa-shield-alt"></i></div>
+            </div>
+            <p class="stat-card-value" id="authStatusDisplay" style="font-size:20px;">Connected</p>
+            <div class="stat-card-change up" id="lastLoginDisplay">Last login: --</div>
+          </div>
+        </div>
+
+        <div class="admin-panel-grid" style="grid-template-columns:1fr 1fr;">
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-history"></i> Recent Activity</h3></div>
+            <div class="admin-panel-body">
+              <ul class="activity-list" id="recentActivityList"></ul>
+            </div>
+          </div>
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-sticky-note"></i> Admin Notes</h3></div>
+            <div class="admin-panel-body">
+              <div class="admin-form-group">
+                <textarea id="adminNotes" placeholder="Write quick notes, reminders, or tasks..." style="min-height:120px;"></textarea>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" id="saveNotesBtn"><i class="fas fa-save"></i> Save Notes</button>
+                <button class="btn btn-outline" id="clearNotesBtn"><i class="fas fa-trash"></i> Clear</button>
+              </div>
+              <p class="saved-msg" id="notesStatus"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="admin-page" id="page-spots">
+        <div class="admin-page-header">
+          <div>
+            <h2>Manage Tourist Spots</h2>
+            <p>Edit spot categories, descriptions, and details directly.</p>
+          </div>
+          <div class="admin-inline-actions">
+            <button class="btn btn-primary" id="addSpotBtn"><i class="fas fa-plus"></i> Add New Spot</button>
+            <button class="btn btn-outline" id="resetSpotsBtn"><i class="fas fa-undo"></i> Reset to Defaults</button>
+          </div>
+        </div>
+        
+        <div class="admin-panel-grid" style="grid-template-columns:1fr 1fr;">
+          
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-list"></i> All Tourist Spots</h3></div>
+            <div class="admin-panel-body">
+              <div class="spot-list-scroll" id="spotListContainer"></div>
+              <div class="archive-section">
+                <h4 style="margin:0 0 10px;font-size:15px;"><i class="fas fa-archive"></i> Archived Spots</h4>
+                <div id="archiveListContainer"></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-edit"></i> <span id="spotEditorTitle">Spot Editor</span></h3></div>
+            <div class="admin-panel-body">
+              <div class="admin-form-group">
+                <label>Spot Name</label>
+                <input type="text" id="editSpotName" placeholder="Name of the tourist spot">
+              </div>
+              <div class="admin-form-group">
+                <label>Categories</label>
+                <div id="editSpotCategories" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px;">
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" value="Nature"> Nature</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" value="Park"> Park</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" value="Landmark"> Landmark</label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;"><input type="checkbox" value="Culture"> Culture</label>
+                </div>
+              </div>
+              <div class="admin-form-group">
+                <label>Description</label>
+                <textarea id="editSpotDesc" placeholder="Spot description..." style="min-height:80px;"></textarea>
+              </div>
+              <div class="admin-form-group">
+                <label>Image URL</label>
+                <input type="text" id="editSpotImage" placeholder="Image URL">
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Location</label>
+                  <input type="text" id="editSpotLocation" placeholder="e.g. Baguio City">
+                </div>
+                <div class="admin-form-group">
+                  <label>Page Link</label>
+                  <input type="text" id="editSpotPage" placeholder="e.g. mirador.html">
+                </div>
+              </div>
+              <div style="margin:24px 0 10px;">
+                <h4 style="margin:0;font-size:16px;color:#1f2937;">Commute Guide</h4>
+                <p style="margin:6px 0 0;font-size:13px;color:var(--admin-text-muted);">Add terminal and route details for the commute guide.</p>
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Terminal</label>
+                  <input type="text" id="editSpotTerminal" placeholder="e.g. Mines View Terminal">
+                </div>
+                <div class="admin-form-group">
+                  <label>Board at</label>
+                  <input type="text" id="editSpotBoard" placeholder="e.g. Minesview Terminal">
+                </div>
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Drop-off</label>
+                  <input type="text" id="editSpotDropoff" placeholder="e.g. Roadside near gate">
+                </div>
+                <div class="admin-form-group">
+                  <label>Route</label>
+                  <input type="text" id="editSpotRoute" placeholder="e.g. Baguio Plaza | Mines View V.V.">
+                </div>
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Walk</label>
+                  <input type="text" id="editSpotWalk" placeholder="e.g. 2–4 mins to entrance">
+                </div>
+                <div class="admin-form-group">
+                  <label>Walk time</label>
+                  <input type="text" id="editSpotWalkTime" placeholder="e.g. 2–4 mins">
+                </div>
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Return trip</label>
+                  <input type="text" id="editSpotReturn" placeholder="e.g. Ride Plaza-bound jeep from road">
+                </div>
+                <div class="admin-form-group">
+                  <label>Latitude</label>
+                  <input type="text" id="editSpotLat" placeholder="e.g. 16.4150">
+                </div>
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Longitude</label>
+                  <input type="text" id="editSpotLng" placeholder="e.g. 120.6130">
+                </div>
+                <div class="admin-form-group" style="display:flex;align-items:flex-end;">
+                  <button class="btn btn-outline" type="button" id="geocodeAddressBtn">Lookup coords</button>
+                </div>
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Note</label>
+                  <textarea id="editSpotNote" placeholder="Any additional guidance..." style="min-height:60px;"></textarea>
+                </div>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-success" id="saveSpotBtn"><i class="fas fa-save"></i> Save Changes</button>
+                <button class="btn btn-danger" id="deleteSpotBtn"><i class="fas fa-trash"></i> Delete</button>
+                <button class="btn btn-outline" id="cancelSpotBtn">Cancel</button>
+              </div>
+              <p class="saved-msg" id="spotStatus"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="admin-page" id="page-announcements">
+        <div class="admin-page-header">
+          <div>
+            <h2>Announcements</h2>
+            <p>Create and manage announcements displayed on the platform.</p>
+          </div>
+          <div>
+            <button class="btn btn-danger" id="clearAnnouncementsBtn"><i class="fas fa-trash-alt"></i> Clear All</button>
+          </div>
+        </div>
+        <div class="admin-panel-grid">
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-plus-circle"></i> New Announcement</h3></div>
+            <div class="admin-panel-body">
+              <div class="admin-form-group">
+                <label>Title</label>
+                <input type="text" id="announcementTitle" placeholder="e.g. Road Advisory, Event, etc.">
+              </div>
+              <div class="admin-form-group">
+                <label>Content</label>
+                <textarea id="announcementContent" placeholder="Write announcement message..." style="min-height:100px;"></textarea>
+              </div>
+              <div class="admin-form-group">
+                <label>Image URL (optional)</label>
+                <input type="text" id="announcementImageUrl" placeholder="https://example.com/image.jpg">
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-primary" id="saveAnnouncementBtn"><i class="fas fa-save"></i> Save Announcement</button>
+                <button class="btn btn-outline" id="clearAnnouncementBtn">Clear</button>
+              </div>
+              <p class="saved-msg" id="announceStatus"></p>
+            </div>
+          </div>
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-list"></i> Published Announcements</h3></div>
+            <div class="admin-panel-body" id="announcementsList"></div>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="admin-page" id="page-feedback">
+        <div class="admin-page-header">
+          <div>
+            <h2>User Feedback</h2>
+            <p>Messages submitted by users through the platform.</p>
+          </div>
+        </div>
+        <div class="admin-panel">
+          <div class="admin-panel-header"><h3><i class="fas fa-comments"></i> All Messages</h3></div>
+          <div class="admin-panel-body" id="feedbackList"></div>
+        </div>
+      </div>
+
+      
+      <div class="admin-page" id="page-analytics">
+        <div class="admin-page-header">
+          <div>
+            <h2>Analytics</h2>
+            <p>Visual insights into your platform performance.</p>
+          </div>
+          <div>
+            <button class="btn btn-primary" id="refreshAnalyticsBtn"><i class="fas fa-sync-alt"></i> Refresh Data</button>
+          </div>
+        </div>
+        <div class="stats-grid" id="analyticsStats">
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Total Visitors</span>
+              <div class="stat-card-icon blue"><i class="fas fa-users"></i></div>
+            </div>
+            <p class="stat-card-value" id="analyticsTotalVisits">0</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Page Views</span>
+              <div class="stat-card-icon green"><i class="fas fa-eye"></i></div>
+            </div>
+            <p class="stat-card-value" id="analyticsPageViews">0</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Feedback Rate</span>
+              <div class="stat-card-icon purple"><i class="fas fa-reply"></i></div>
+            </div>
+            <p class="stat-card-value" id="analyticsFeedbackRate">0%</p>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-header">
+              <span class="stat-card-label">Active Pages</span>
+              <div class="stat-card-icon yellow"><i class="fas fa-file-alt"></i></div>
+            </div>
+            <p class="stat-card-value" id="analyticsActivePages">14</p>
+          </div>
+        </div>
+        <div class="chart-grid">
+          <div class="chart-card">
+            <h4><i class="fas fa-chart-pie"></i> Page Visit Distribution</h4>
+            <canvas id="pageVisitChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <h4><i class="fas fa-chart-line"></i> Category Distribution</h4>
+            <canvas id="categoryChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="admin-page" id="page-activity">
+        <div class="admin-page-header">
+          <div>
+            <h2>Activity Log</h2>
+            <p>Complete history of admin actions.</p>
+          </div>
+          <div>
+            <button class="btn btn-danger" id="clearActivityBtn"><i class="fas fa-trash-alt"></i> Clear Log</button>
+          </div>
+        </div>
+        <div class="admin-panel">
+          <div class="admin-panel-header"><h3><i class="fas fa-history"></i> All Activities</h3></div>
+          <div class="admin-panel-body">
+            <ul class="activity-list" id="fullActivityList" style="max-height:600px;"></ul>
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="admin-page" id="page-settings">
+        <div class="admin-page-header">
+          <div>
+            <h2>Settings</h2>
+            <p>System configuration and admin preferences.</p>
+          </div>
+        </div>
+        <div class="admin-panel-grid">
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-user-shield"></i> Admin Account</h3></div>
+            <div class="admin-panel-body">
+              <div class="admin-form-group">
+                <label>Admin Email</label>
+                <input type="text" id="settingsAdminEmail" readonly>
+              </div>
+              <div class="admin-form-group">
+                <label>Last Login</label>
+                <input type="text" id="settingsLastLogin" readonly>
+              </div>
+            </div>
+          </div>
+          <div class="admin-panel">
+            <div class="admin-panel-header"><h3><i class="fas fa-database"></i> Data Management</h3></div>
+            <div class="admin-panel-body">
+              <div class="admin-form-group">
+                <label>Storage Used (Local)</label>
+                <input type="text" id="settingsStorageUsed" readonly>
+              </div>
+              <div class="form-actions">
+                <button class="btn btn-danger" id="clearAllDataBtn"><i class="fas fa-exclamation-triangle"></i> Clear All Local Data</button>
+              </div>
+              <p class="saved-msg" id="settingsStatus"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
+import { getFirestore, collection, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDPFnyJC66A-HQC3dKCQQ4SobAFRezx7fU",
+  authDomain: "baguio-track-c702f.firebaseapp.com",
+  projectId: "baguio-track-c702f",
+  storageBucket: "baguio-track-c702f.firebasestorage.app",
+  messagingSenderId: "27598181344",
+  appId: "1:27598181344:web:97bf7dd2a32dbfe14ed185"
+};
+
+const ADMIN_ALLOWLIST = [
+  "dotcarbtrack@gmail.com",
+  "michaelreynotarte69@gmail.com",
+  "jammytanglib45@gmail.com",
+  "psychandreilopez18@gmail.com"
+];
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ===== DEFAULT TOURIST SPOTS DATA =====
+const DEFAULT_SPOTS = [
+  { name: "Mirador Heritage And Eco Park", categories: ["Nature","Park"], page: "mirador.html", image: "https://i.pinimg.com/736x/11/50/aa/1150aa2cd209123f65ae4af4bb5911f9.jpg", location: "Mirador Hill, Baguio City", desc: "A popular spot for tourists and locals alike, who come to enjoy the stunning views of Baguio City and the surrounding mountains and is also home to a bamboo grove, rock formations, and more." },
+  { name: "Botanical Garden", categories: ["Nature","Park"], page: "botanical.html", image: "../assets/images/botanicalgarden.jpg", location: "Leonard Wood Road, Baguio City", desc: "A peaceful botanical sanctuary with towering pines, flower gardens, and cultural sculptures perfect for relaxing walks and photo spots." },
+  { name: "Mines View Park", categories: ["Park","Landmark"], page: "minesview.html", image: "../assets/images/minesviewpark.jpg", location: "Mines View Road, Baguio City", desc: "A popular viewpoint offering sweeping mountain vistas, historic mining landscapes, and shops selling local crafts and treats." },
+  { name: "The Mansion", categories: ["Landmark"], page: "mansion.html", image: "../assets/images/mansion.jpg", location: "Leonard Wood Road, Baguio City", desc: "The official summer residence of the Philippine President, known for its grand gate, manicured lawns, and historical significance." },
+  { name: "Camp John Hay", categories: ["Nature","Park","Landmark"], page: "johnhay.html", image: "../assets/images/camp.jpg", location: "Loakan Road, Baguio City", desc: "A historic leisure complex with pine forests, trails, cafés, and heritage sites perfect for outdoor exploration." },
+  { name: "Lourdes Grotto", categories: ["Landmark","Culture"], page: "grotto.html", image: "../assets/images/grotto.jpg", location: "Dominican Hill Road, Mirador Hill, Baguio City", desc: "A beloved pilgrimage site featuring the Virgin Mary statue atop 252 steps and panoramic city views for reflective moments." },
+  { name: "Good Shepherd Convent", categories: ["Culture"], page: "goodshepherd.html", image: "https://i.pinimg.com/1200x/18/a5/28/18a5289c26005e8d1480cb4aef29950b.jpg", location: "15 Gibraltar Road, Mines View, Baguio City", desc: "Famous for ube jam and local pasalubong, this convent is a scenic stop for shopping, snacks, and quiet reflection." },
+  { name: "Lions Head", categories: ["Landmark"], page: "lionshead.html", image: "../assets/images/lion.webp", location: "Kennon Road, near Barangay Calasungay, Tuba, Benguet", desc: "The Lion's Head along Kennon Road is a famous roadside landmark in Benguet, Philippines, carved into the mountainside." },
+  { name: "Diplomat Hotel", categories: ["Landmark","Culture"], page: "diplomat.html", image: "https://i.pinimg.com/1200x/90/ad/e5/90ade57f70358c88c020cb78fd4d4b00.jpg", location: "Dominican Hill, Diplomat Road, Baguio, 2600 Benguet", desc: "This hotel holds a lot of history, from being a seminary to a hotel, and now a popular tourist attraction known for its architecture and ghost stories." },
+  { name: "Wright Park", categories: ["Park","Landmark"], page: "wrightpark.html", image: "https://i.pinimg.com/1200x/9e/a1/9d/9ea19da330f29c25a4f5f920f46e466d.jpg", location: "The Mansion, Romulo Dr, Baguio, Benguet", desc: "The park is a favorite spot for tourists and locals to enjoy leisurely walks, take photos, and experience the cool mountain air." },
+  { name: "Igorot Stone Kingdom", categories: ["Landmark","Culture"], page: "igorot.html", image: "https://i.pinimg.com/736x/f2/48/81/f248816e6f5950cb5ab481af89c95e5d.jpg", location: "Long Long Road, Pinsao Proper, Baguio City", desc: "The park celebrates Igorot culture through the traditional riprap stone-laying technique, which involves stacking stones without cement." },
+  { name: "Dragon Treasure Castle", categories: ["Landmark","Culture"], page: "dragon.html", image: "https://lakbaypinas.com/wp-content/uploads/2025/02/471333542_122116129676614614_476453595541820013_n-1536x864.jpg", location: "Block 8, Irisville Subdivision, Baguio City, Benguet", desc: "Dragon Treasure Castle is worth visiting if you want dramatic photos, fantasy-style architecture, and a short Baguio side trip." },
+  { name: "Tam-Awan Village", categories: ["Culture"], page: "tamawan.html", image: "https://i.pinimg.com/1200x/35/67/2c/35672c91f7f83f36499f5117c76f78d1.jpg", location: "Long Long Benguet Rd, Baguio City, Benguet", desc: "Tam-Awan Village holds its true values and culture of the Cordilleran heritage." },
+  { name: "Bell Church", categories: ["Landmark","Culture"], page: "bellchurch.html", image: "https://i.pinimg.com/736x/33/45/08/334508be47f39d2f03b6ba791a11a97e.jpg", location: "Bell Church Rd, La Trinidad, Benguet", desc: "Bell Church is a Chinese temple known for its colorful architecture, serene gardens, and cultural significance." }
+];
+
+// ===== DOM ELEMENTS =====
+const statSpots = document.getElementById("statSpots");
+const statAnnouncements = document.getElementById("statAnnouncements");
+const statFeedback = document.getElementById("statFeedback");
+const statPageVisits = document.getElementById("statPageVisits");
+const statDaily = document.getElementById("statDaily");
+const authStatusDisplay = document.getElementById("authStatusDisplay");
+const lastLoginDisplay = document.getElementById("lastLoginDisplay");
+const adminEmailDisplay = document.getElementById("adminEmailDisplay");
+const recentActivityList = document.getElementById("recentActivityList");
+const fullActivityList = document.getElementById("fullActivityList");
+const adminNotes = document.getElementById("adminNotes");
+
+// Announcement elements
+const announcementTitle = document.getElementById("announcementTitle");
+const announcementContent = document.getElementById("announcementContent");
+const announcementImageUrl = document.getElementById("announcementImageUrl");
+const saveAnnouncementBtn = document.getElementById("saveAnnouncementBtn");
+const clearAnnouncementBtn = document.getElementById("clearAnnouncementBtn");
+const announceStatus = document.getElementById("announceStatus");
+const announcementsList = document.getElementById("announcementsList");
+const clearAnnouncementsBtn = document.getElementById("clearAnnouncementsBtn");
+
+// Spot editor
+const spotListContainer = document.getElementById("spotListContainer");
+const archiveListContainer = document.getElementById("archiveListContainer");
+const editSpotName = document.getElementById("editSpotName");
+const editSpotDesc = document.getElementById("editSpotDesc");
+const editSpotImage = document.getElementById("editSpotImage");
+const editSpotLocation = document.getElementById("editSpotLocation");
+const editSpotPage = document.getElementById("editSpotPage");
+const editSpotTerminal = document.getElementById("editSpotTerminal");
+const editSpotBoard = document.getElementById("editSpotBoard");
+const editSpotDropoff = document.getElementById("editSpotDropoff");
+const editSpotRoute = document.getElementById("editSpotRoute");
+const editSpotWalk = document.getElementById("editSpotWalk");
+const editSpotWalkTime = document.getElementById("editSpotWalkTime");
+const editSpotReturn = document.getElementById("editSpotReturn");
+const editSpotNote = document.getElementById("editSpotNote");
+const editSpotLat = document.getElementById("editSpotLat");
+const editSpotLng = document.getElementById("editSpotLng");
+const geocodeAddressBtn = document.getElementById("geocodeAddressBtn");
+const editSpotCategories = document.getElementById("editSpotCategories");
+const saveSpotBtn = document.getElementById("saveSpotBtn");
+const deleteSpotBtn = document.getElementById("deleteSpotBtn");
+const cancelSpotBtn = document.getElementById("cancelSpotBtn");
+const spotStatus = document.getElementById("spotStatus");
+const resetSpotsBtn = document.getElementById("resetSpotsBtn");
+const addSpotBtn = document.getElementById("addSpotBtn");
+
+// ===== DATA STORES =====
+let announcements = [];
+const DEFAULT_ADMIN_ANNOUNCEMENTS = [
+  {
+    title: "Baguio Summer Streets Festival",
+    content: "The Summer Streets Festival is happening this weekend. Expect pedestrian-friendly sections around Session Road, special stalls at Burnham Park, and local food pop-ups.",
+    image: "https://i.pinimg.com/1200x/78/0c/e7/780ce772f74f82e10f0e15999bbb4f7f.jpg",
+    date: new Date().toISOString()
+  },
+  {
+    title: "Jeepney Route Advisory",
+    content: "Some routes may have temporary changes during peak times. Encourage users to visit the Terminals page for the latest terminal and route information.",
+    image: "https://i.pinimg.com/1200x/5f/8d/ce/5f8dce574fbde1e5be8c4d5f53a11b3e.jpg",
+    date: new Date(Date.now() - 86400000).toISOString()
+  },
+  {
+    title: "Top Sites Today",
+    content: "Popular spots like Mines View Park, Camp John Hay, and the Botanical Garden are open for visitors. Use the platform to see commute tips and travel advisories.",
+    image: "https://i.pinimg.com/1200x/5a/e8/5f/5ae85f37d4b33f06ab3fe95f586a03f9.jpg",
+    date: new Date(Date.now() - 2 * 86400000).toISOString()
+  }
+];
+let spotsData = [];
+let editingAnnouncementId = null;
+let editingSpotIndex = null;
+let feedbackMessages = [];
+
+// ===== UTILITY FUNCTIONS =====
+function getTrackedPageKey() {
+  const path = window.location.pathname.split('/').pop().toLowerCase();
+  if (path.includes('home') || path === '' || path === 'index.html') return 'home';
+  if (path.includes('tourist')) return 'tourist';
+  if (path.includes('jeepterminal')) return 'jeepterminal';
+  if (path.includes('admin')) return 'admin';
+  return 'home';
+}
+
+function getVisitorSessionId() {
+  return sessionStorage.getItem('visitorSessionId');
+}
+
+function createVisitorSession() {
+  const sessionId = `visitor_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  sessionStorage.setItem('visitorSessionId', sessionId);
+  sessionStorage.setItem('visitorSessionStart', String(Date.now()));
+  return sessionId;
+}
+
+function resetDailyVisitorsIfNewDay() {
+  const today = new Date().toDateString();
+  const storedDay = localStorage.getItem('dailyVisitorsDate');
+  if (storedDay !== today) {
+    localStorage.setItem('dailyVisitorsDate', today);
+    localStorage.setItem('dailyVisitors', '0');
+  }
+}
+
+function countVisitorSessionIfNeeded() {
+  if (!getVisitorSessionId()) {
+    createVisitorSession();
+    const totalVisits = parseInt(localStorage.getItem('visitCount') || '0', 10) + 1;
+    localStorage.setItem('visitCount', String(totalVisits));
+
+    resetDailyVisitorsIfNewDay();
+    const currentDaily = parseInt(localStorage.getItem('dailyVisitors') || '0', 10) + 1;
+    localStorage.setItem('dailyVisitors', String(currentDaily));
+  }
+}
+
+function trackPageViewAndDailyVisitors() {
+  const pageKey = getTrackedPageKey();
+  if (pageKey === 'admin') {
+    // Admin page views should not count as public page visits.
+    return;
+  }
+
+  const currentKey = `click_${pageKey}`;
+  const currentCount = parseInt(localStorage.getItem(currentKey) || '0', 10) + 1;
+  localStorage.setItem(currentKey, String(currentCount));
+
+  resetDailyVisitorsIfNewDay();
+  countVisitorSessionIfNeeded();
+}
+
+function prependActivity(text, createdAt = Date.now()) {
+  const list = recentActivityList;
+  const placeholder = list.querySelector(".activity-placeholder");
+  if (placeholder) placeholder.remove();
+  const li = createActivityItem(text, createdAt);
+  list.prepend(li);
+  // Also add to full log
+  rebuildFullActivityLog();
+}
+
+function createActivityItem(text, createdAt = Date.now()) {
+  const li = document.createElement("li");
+  const textSpan = document.createElement("span");
+  textSpan.className = "activity-text";
+  textSpan.textContent = text;
+  li.appendChild(textSpan);
+  const timeTag = document.createElement("span");
+  timeTag.className = "activity-time";
+  timeTag.textContent = new Date(createdAt).toLocaleString();
+  li.appendChild(timeTag);
+  return li;
+}
+
+function rebuildFullActivityLog() {
+  fullActivityList.innerHTML = "";
+  const items = recentActivityList.querySelectorAll("li");
+  if (items.length === 0) {
+    const li = document.createElement("li");
+    li.className = "activity-placeholder";
+    li.textContent = "No activity recorded yet.";
+    fullActivityList.appendChild(li);
+    return;
+  }
+  items.forEach(item => {
+    fullActivityList.appendChild(item.cloneNode(true));
+  });
+}
+
+function renderActivityPlaceholder() {
+  if (recentActivityList.children.length === 0) {
+    const li = document.createElement("li");
+    li.className = "activity-placeholder";
+    li.textContent = "No recent activity yet.";
+    recentActivityList.appendChild(li);
+  }
+  rebuildFullActivityLog();
+}
+
+function formatSavedMessage(target, message, isError = false) {
+  target.textContent = message;
+  target.className = "saved-msg " + (isError ? "error" : "success");
+  setTimeout(() => { target.textContent = ""; target.className = "saved-msg"; }, 3000);
+}
+
+async function geocodeLocation(address) {
+  if (!address || !address.trim()) return null;
+  const query = encodeURIComponent(address.trim() + ', Baguio City');
+  const url = `https://nominatim.openstreetmap.org/search?q=${query}&format=json&limit=1`;
+  try {
+    const response = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const data = await response.json();
+    if (Array.isArray(data) && data.length > 0) {
+      return { lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon) };
+    }
+  } catch (e) {
+    console.warn('Geocode lookup failed', e);
+  }
+  return null;
+}
+
+function getTotalPageVisits() {
+  let total = 0;
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith("click_")) {
+      total += parseInt(localStorage.getItem(key) || "0", 10);
+    }
+  }
+  return total;
+}
+
+function updateDashboardStats() {
+  const activeSpots = spotsData.filter(spot => !spot.archived);
+  statSpots.textContent = activeSpots.length;
+  statAnnouncements.textContent = announcements.length;
+  statPageVisits.textContent = getTotalPageVisits();
+  statDaily.textContent = localStorage.getItem("visitCount") || "0";
+}
+
+// ===== SPOTS MANAGEMENT =====
+function normalizeSpotsData(data = []) {
+  return data.map((spot, index) => ({
+    ...spot,
+    name: spot.name || `New Spot ${index + 1}`,
+    categories: Array.isArray(spot.categories) ? spot.categories : [],
+    archived: Boolean(spot.archived),
+    createdAt: spot.createdAt || Date.now() + index
+  }));
+}
+
+function saveSpotsToStorage() {
+  localStorage.setItem("adminSpotsData", JSON.stringify(spotsData));
+}
+
+function loadSpots() {
+  try {
+    const saved = localStorage.getItem("adminSpotsData");
+    if (saved) {
+      spotsData = normalizeSpotsData(JSON.parse(saved));
+    } else {
+      spotsData = normalizeSpotsData(JSON.parse(JSON.stringify(DEFAULT_SPOTS)));
+      saveSpotsToStorage();
+    }
+  } catch (e) {
+    spotsData = normalizeSpotsData(JSON.parse(JSON.stringify(DEFAULT_SPOTS)));
+    saveSpotsToStorage();
+  }
+  renderSpotList();
+  renderArchiveList();
+  updateDashboardStats();
+}
+
+function resetEditor() {
+  editingSpotIndex = null;
+  document.getElementById("spotEditorTitle").textContent = "Spot Editor";
+  editSpotName.value = "";
+  editSpotDesc.value = "";
+  editSpotImage.value = "";
+  editSpotLocation.value = "";
+  editSpotPage.value = "";
+  editSpotTerminal.value = "";
+  editSpotBoard.value = "";
+  editSpotDropoff.value = "";
+  editSpotRoute.value = "";
+  editSpotWalk.value = "";
+  editSpotWalkTime.value = "";
+  editSpotReturn.value = "";
+  editSpotNote.value = "";
+  editSpotLat.value = "";
+  editSpotLng.value = "";
+  editSpotCategories.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+  saveSpotBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+  spotStatus.textContent = "";
+}
+
+function renderSpotList() {
+  const activeSpots = spotsData.filter(spot => !spot.archived);
+  spotListContainer.innerHTML = "";
+  if (activeSpots.length === 0) {
+    spotListContainer.innerHTML = '<div class="empty-state"><i class="fas fa-map-marker-alt"></i><p>No active spots yet.</p></div>';
+    return;
+  }
+
+  activeSpots.forEach(spot => {
+    const index = spotsData.indexOf(spot);
+    const div = document.createElement("div");
+    div.className = "spot-item";
+    div.innerHTML = `
+      <img src="${spot.image || 'https://via.placeholder.com/60'}" alt="${spot.name}" class="spot-item-img" onerror="this.src='https://via.placeholder.com/60'">
+      <div class="spot-item-info">
+        <p class="spot-item-name">${spot.name}</p>
+        <div class="spot-item-cats">
+          ${spot.categories.map(c => `<span class="spot-cat-tag ${c.toLowerCase()}">${c}</span>`).join('')}
+        </div>
+      </div>
+      <div class="spot-item-actions">
+        <button class="btn btn-primary btn-sm edit-spot-btn" data-index="${index}"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm delete-spot-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
+      </div>
+    `;
+    spotListContainer.appendChild(div);
+  });
+
+  document.querySelectorAll(".edit-spot-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.getAttribute("data-index"));
+      openSpotEditor(index);
+    });
+  });
+
+  document.querySelectorAll(".delete-spot-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.getAttribute("data-index"));
+      archiveSpot(index);
+    });
+  });
+}
+
+function renderArchiveList() {
+  const archivedSpots = spotsData.filter(spot => spot.archived);
+  archiveListContainer.innerHTML = "";
+  if (archivedSpots.length === 0) {
+    archiveListContainer.innerHTML = '<div class="empty-state"><i class="fas fa-archive"></i><p>No archived spots yet.</p></div>';
+    return;
+  }
+
+  archivedSpots.forEach(spot => {
+    const index = spotsData.indexOf(spot);
+    const item = document.createElement("div");
+    item.className = "archive-item";
+    item.innerHTML = `
+      <div>
+        <strong>${spot.name}</strong>
+        <div class="archive-meta">Archived ${spot.archivedAt ? new Date(spot.archivedAt).toLocaleString() : 'recently'}</div>
+      </div>
+      <div class="admin-inline-actions">
+        <button class="btn btn-success btn-sm restore-spot-btn" data-index="${index}"><i class="fas fa-undo"></i> Restore</button>
+        <button class="btn btn-danger btn-sm erase-spot-btn" data-index="${index}"><i class="fas fa-times"></i> Delete Permanently</button>
+      </div>
+    `;
+    archiveListContainer.appendChild(item);
+  });
+
+  document.querySelectorAll(".restore-spot-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.getAttribute("data-index"));
+      restoreSpot(index);
+    });
+  });
+
+  document.querySelectorAll(".erase-spot-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.getAttribute("data-index"));
+      permanentlyDeleteSpot(index);
+    });
+  });
+}
+
+function openSpotEditor(index) {
+  const spot = spotsData[index];
+  if (!spot) return;
+  editingSpotIndex = index;
+  editSpotName.value = spot.name;
+  editSpotDesc.value = spot.desc || "";
+  editSpotImage.value = spot.image || "";
+  editSpotLocation.value = spot.location || "";
+  editSpotPage.value = spot.page || "";
+  editSpotTerminal.value = spot.terminal || "";
+  editSpotBoard.value = spot.board || "";
+  editSpotDropoff.value = spot.dropOff || "";
+  editSpotRoute.value = spot.route || "";
+  editSpotWalk.value = spot.walk || "";
+  editSpotWalkTime.value = spot.walkTime || "";
+  editSpotReturn.value = spot.returnTrip || "";
+  editSpotNote.value = spot.note || "";
+  editSpotLat.value = spot.coords?.[0] || "";
+  editSpotLng.value = spot.coords?.[1] || "";
+  document.getElementById("spotEditorTitle").textContent = 'Edit: ' + spot.name;
+  
+  const checks = editSpotCategories.querySelectorAll('input[type="checkbox"]');
+  checks.forEach(cb => {
+    cb.checked = spot.categories.includes(cb.value);
+  });
+  saveSpotBtn.innerHTML = '<i class="fas fa-save"></i> Save Changes';
+  spotStatus.textContent = "";
+}
+
+function startNewSpot() {
+  editingSpotIndex = null;
+  document.getElementById("spotEditorTitle").textContent = "Add New Spot";
+  editSpotName.value = "";
+  editSpotDesc.value = "";
+  editSpotImage.value = "";
+  editSpotLocation.value = "";
+  editSpotPage.value = "";
+  editSpotCategories.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+  saveSpotBtn.innerHTML = '<i class="fas fa-plus"></i> Add Spot';
+  spotStatus.textContent = "";
+}
+
+async function saveSpotData() {
+  const spotName = editSpotName.value.trim();
+  const checks = editSpotCategories.querySelectorAll('input[type="checkbox"]:checked');
+  const categories = Array.from(checks).map(cb => cb.value);
+  
+  if (!spotName) {
+    formatSavedMessage(spotStatus, "Please enter a tourist spot name.", true);
+    return;
+  }
+
+  if (categories.length === 0) {
+    formatSavedMessage(spotStatus, "Please select at least one category.", true);
+    return;
+  }
+
+  const coords = [];
+  const lat = parseFloat(editSpotLat.value.trim());
+  const lng = parseFloat(editSpotLng.value.trim());
+  if (!isNaN(lat) && !isNaN(lng)) {
+    coords.push(lat, lng);
+  }
+
+  const locationText = editSpotLocation.value.trim();
+  if (coords.length === 0 && locationText) {
+    const geo = await geocodeLocation(locationText);
+    if (geo && !Number.isNaN(geo.lat) && !Number.isNaN(geo.lng)) {
+      coords.push(geo.lat, geo.lng);
+    }
+  }
+
+  if (coords.length === 0 && (editSpotTerminal.value.trim() || editSpotBoard.value.trim() || editSpotDropoff.value.trim() || editSpotRoute.value.trim())) {
+    formatSavedMessage(spotStatus, "Coordinates are required for commute spots. Enter latitude/longitude or provide a valid address.", true);
+    return;
+  }
+
+  if (editingSpotIndex === null) {
+    const newSpot = {
+      name: spotName,
+      categories,
+      desc: editSpotDesc.value.trim(),
+      image: editSpotImage.value.trim(),
+      location: editSpotLocation.value.trim(),
+      page: editSpotPage.value.trim(),
+      terminal: editSpotTerminal.value.trim(),
+      board: editSpotBoard.value.trim(),
+      dropOff: editSpotDropoff.value.trim(),
+      route: editSpotRoute.value.trim(),
+      walk: editSpotWalk.value.trim(),
+      walkTime: editSpotWalkTime.value.trim(),
+      returnTrip: editSpotReturn.value.trim(),
+      note: editSpotNote.value.trim(),
+      coords: coords.length === 2 ? coords : null,
+      archived: false,
+      createdAt: Date.now()
+    };
+    spotsData.unshift(newSpot);
+    saveSpotsToStorage();
+    renderSpotList();
+    renderArchiveList();
+    updateDashboardStats();
+    prependActivity(`Added spot: "${newSpot.name}"`, Date.now());
+    formatSavedMessage(spotStatus, "Spot added successfully!");
+  } else {
+    const spot = spotsData[editingSpotIndex];
+    if (!spot) return;
+    spot.name = spotName;
+    spot.categories = categories;
+    spot.desc = editSpotDesc.value.trim();
+    spot.image = editSpotImage.value.trim();
+    spot.location = editSpotLocation.value.trim();
+    spot.page = editSpotPage.value.trim();
+    spot.terminal = editSpotTerminal.value.trim();
+    spot.board = editSpotBoard.value.trim();
+    spot.dropOff = editSpotDropoff.value.trim();
+    spot.route = editSpotRoute.value.trim();
+    spot.walk = editSpotWalk.value.trim();
+    spot.walkTime = editSpotWalkTime.value.trim();
+    spot.returnTrip = editSpotReturn.value.trim();
+    spot.note = editSpotNote.value.trim();
+    spot.coords = coords.length === 2 ? coords : spot.coords || null;
+    saveSpotsToStorage();
+    renderSpotList();
+    renderArchiveList();
+    updateDashboardStats();
+    prependActivity(`Updated spot: "${spot.name}"`, Date.now());
+    formatSavedMessage(spotStatus, "Spot updated successfully!");
+  }
+  resetEditor();
+}
+
+function archiveSpot(index) {
+  const spot = spotsData[index];
+  if (!spot) return;
+  if (!confirm(`Archive "${spot.name}" and hide it from the public tourist page?`)) return;
+  spot.archived = true;
+  spot.archivedAt = new Date().toISOString();
+  saveSpotsToStorage();
+  renderSpotList();
+  renderArchiveList();
+  updateDashboardStats();
+  prependActivity(`Archived spot: "${spot.name}"`, Date.now());
+  formatSavedMessage(spotStatus, "Spot archived.");
+  resetEditor();
+}
+
+function restoreSpot(index) {
+  const spot = spotsData[index];
+  if (!spot) return;
+  spot.archived = false;
+  delete spot.archivedAt;
+  saveSpotsToStorage();
+  renderSpotList();
+  renderArchiveList();
+  updateDashboardStats();
+  prependActivity(`Restored spot: "${spot.name}"`, Date.now());
+  formatSavedMessage(spotStatus, `Restored "${spot.name}".`);
+}
+
+function permanentlyDeleteSpot(index) {
+  const spot = spotsData[index];
+  if (!spot) return;
+  if (!confirm(`Delete "${spot.name}" permanently? This cannot be undone.`)) return;
+  spotsData.splice(index, 1);
+  saveSpotsToStorage();
+  renderSpotList();
+  renderArchiveList();
+  updateDashboardStats();
+  prependActivity(`Deleted spot permanently: "${spot.name}"`, Date.now());
+  formatSavedMessage(spotStatus, "Spot removed permanently.");
+}
+
+saveSpotBtn.addEventListener("click", saveSpotData);
+geocodeAddressBtn.addEventListener("click", async () => {
+  const address = editSpotLocation.value.trim();
+  if (!address) {
+    formatSavedMessage(spotStatus, "Enter an address or place name before looking up coordinates.", true);
+    return;
+  }
+
+  formatSavedMessage(spotStatus, "Looking up coordinates...");
+  const geo = await geocodeLocation(address);
+  if (geo && !Number.isNaN(geo.lat) && !Number.isNaN(geo.lng)) {
+    editSpotLat.value = geo.lat.toFixed(6);
+    editSpotLng.value = geo.lng.toFixed(6);
+    formatSavedMessage(spotStatus, "Coordinates found and filled in.");
+  } else {
+    formatSavedMessage(spotStatus, "Unable to find coordinates for that address.", true);
+  }
+});
+
+deleteSpotBtn.addEventListener("click", () => {
+  if (editingSpotIndex === null) {
+    formatSavedMessage(spotStatus, "Select a spot before deleting it.", true);
+    return;
+  }
+  archiveSpot(editingSpotIndex);
+});
+
+cancelSpotBtn.addEventListener("click", resetEditor);
+
+addSpotBtn.addEventListener("click", startNewSpot);
+
+resetSpotsBtn.addEventListener("click", () => {
+  if (!confirm("Reset all tourist spots to default? Any edits will be lost.")) return;
+  spotsData = normalizeSpotsData(JSON.parse(JSON.stringify(DEFAULT_SPOTS)));
+  saveSpotsToStorage();
+  renderSpotList();
+  renderArchiveList();
+  updateDashboardStats();
+  prependActivity("Reset all tourist spots to defaults", Date.now());
+  formatSavedMessage(spotStatus, "Spots reset to defaults.");
+  resetEditor();
+});
+
+// ===== ANNOUNCEMENTS MANAGEMENT =====
+function loadAnnouncements() {
+  try {
+    announcements = JSON.parse(localStorage.getItem("announcements") || "[]");
+  } catch(e) {
+    announcements = [];
+  }
+  if (announcements.length === 0) {
+    announcements = DEFAULT_ADMIN_ANNOUNCEMENTS.slice();
+    saveAnnouncementsToStorage();
+  }
+  updateDashboardStats();
+  renderAnnouncements();
+}
+
+function saveAnnouncementsToStorage() {
+  localStorage.setItem("announcements", JSON.stringify(announcements));
+}
+
+function renderAnnouncements() {
+  announcementsList.innerHTML = "";
+  if (announcements.length === 0) {
+    announcementsList.innerHTML = '<div class="empty-state"><i class="fas fa-bullhorn"></i><p>No announcements yet.</p></div>';
+    return;
+  }
+  announcements.forEach((ann, index) => {
+    const div = document.createElement("div");
+    div.style.cssText = "display:flex;align-items:flex-start;gap:16px;padding:16px;border:1px solid var(--admin-border);border-radius:10px;margin-bottom:10px;";
+    div.innerHTML = `
+      <div style="flex:1;min-width:0;">
+        <p style="margin:0 0 4px;font-weight:600;font-size:15px;">${ann.title}</p>
+        <p style="margin:0 0 8px;font-size:13px;color:var(--admin-text-muted);">${ann.content}</p>
+        <span style="font-size:11px;color:var(--admin-text-muted);">${new Date(ann.date).toLocaleString()}</span>
+      </div>
+      <div style="display:flex;gap:6px;flex-shrink:0;">
+        <button class="btn btn-primary btn-sm edit-ann-btn" data-index="${index}"><i class="fas fa-edit"></i></button>
+        <button class="btn btn-danger btn-sm del-ann-btn" data-index="${index}"><i class="fas fa-trash"></i></button>
+      </div>
+    `;
+    announcementsList.appendChild(div);
+  });
+
+  document.querySelectorAll(".edit-ann-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.getAttribute("data-index"));
+      const ann = announcements[index];
+      announcementTitle.value = ann.title;
+      announcementContent.value = ann.content;
+      announcementImageUrl.value = ann.image || "";
+      editingAnnouncementId = index;
+      saveAnnouncementBtn.textContent = "Update";
+      announceStatus.textContent = "";
+    });
+  });
+
+  document.querySelectorAll(".del-ann-btn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const index = parseInt(e.currentTarget.getAttribute("data-index"));
+      if (!confirm("Delete this announcement?")) return;
+      const title = announcements[index].title;
+      announcements.splice(index, 1);
+      saveAnnouncementsToStorage();
+      renderAnnouncements();
+      updateDashboardStats();
+      prependActivity(`Deleted announcement: "${title}"`, Date.now());
+      formatSavedMessage(announceStatus, "Announcement deleted.");
+    });
+  });
+}
+
+saveAnnouncementBtn.addEventListener("click", () => {
+  const title = announcementTitle.value.trim();
+  const content = announcementContent.value.trim();
+  if (!title || !content) {
+    formatSavedMessage(announceStatus, "Please fill in title and content.", true);
+    return;
+  }
+  if (editingAnnouncementId !== null) {
+    announcements[editingAnnouncementId] = { title, content, image: announcementImageUrl.value.trim() || null, date: announcements[editingAnnouncementId].date };
+    prependActivity(`Updated announcement: "${title}"`, Date.now());
+    formatSavedMessage(announceStatus, "Announcement updated.");
+    editingAnnouncementId = null;
+    saveAnnouncementBtn.textContent = "Save Announcement";
+  } else {
+    announcements.unshift({ title, content, image: announcementImageUrl.value.trim() || null, date: new Date().toISOString() });
+    prependActivity(`Posted announcement: "${title}"`, Date.now());
+    formatSavedMessage(announceStatus, "Announcement saved.");
+  }
+  saveAnnouncementsToStorage();
+  updateDashboardStats();
+  announcementTitle.value = "";
+  announcementContent.value = "";
+  announcementImageUrl.value = "";
+  renderAnnouncements();
+});
+
+clearAnnouncementBtn.addEventListener("click", () => {
+  announcementTitle.value = "";
+  announcementContent.value = "";
+  announcementImageUrl.value = "";
+  editingAnnouncementId = null;
+  saveAnnouncementBtn.textContent = "Save Announcement";
+});
+
+clearAnnouncementsBtn.addEventListener("click", () => {
+  if (announcements.length === 0) return formatSavedMessage(announceStatus, "No announcements to clear.", true);
+  if (!confirm("Delete ALL announcements?")) return;
+  announcements = [];
+  saveAnnouncementsToStorage();
+  renderAnnouncements();
+  updateDashboardStats();
+  prependActivity("Cleared all announcements", Date.now());
+  formatSavedMessage(announceStatus, "All announcements cleared.");
+});
+
+// ===== FEEDBACK =====
+const feedbackList = document.getElementById("feedbackList");
+
+function renderEmptyFeedback() {
+  feedbackList.innerHTML = '<div class="empty-state"><i class="fas fa-comments"></i><p>No feedback messages yet.</p></div>';
+}
+
+function addFeedbackCard(data) {
+  const card = document.createElement("div");
+  card.style.cssText = "background:var(--admin-card-hover);border:1px solid var(--admin-border);border-radius:10px;padding:16px;margin-bottom:12px;border-left:3px solid var(--admin-accent);";
+  const createdAtValue = data.createdAt?.toDate?.() || data.createdAt || data.date || Date.now();
+  const date = createdAtValue instanceof Date ? createdAtValue : new Date(createdAtValue);
+  card.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+      <div>
+        <p style="margin:0;font-weight:600;font-size:14px;">${data.email || data.userEmail || "Anonymous"}</p>
+        <p style="margin:2px 0 0;font-size:12px;color:var(--admin-text-muted);">${date.toLocaleString()}</p>
+      </div>
+      ${data.source ? `<span style="font-size:11px;color:var(--admin-text-muted);">${data.source}</span>` : ''}
+    </div>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:var(--admin-text);white-space:pre-wrap;">${(data.message || "").toString()}</p>
+  `;
+  feedbackList.appendChild(card);
+}
+
+function renderLocalFeedbackMessages() {
+  const localMessages = JSON.parse(localStorage.getItem("feedbackMessages") || "[]");
+  localMessages.forEach(msg => addFeedbackCard({ ...msg, source: "Local" }));
+  return localMessages.length;
+}
+
+function startFeedbackListener() {
+  const fbQuery = query(collection(db, "feedback"), orderBy("createdAt", "desc"));
+  onSnapshot(fbQuery, (snapshot) => {
+    feedbackList.innerHTML = "";
+    const localCount = renderLocalFeedbackMessages();
+    if (snapshot.empty && localCount === 0) {
+      statFeedback.textContent = "0";
+      renderEmptyFeedback();
+      return;
+    }
+    if (!snapshot.empty) {
+      snapshot.forEach(docSnap => addFeedbackCard({ ...docSnap.data(), source: "Firestore" }));
+    }
+    statFeedback.textContent = snapshot.size + localCount;
+  }, (error) => {
+    console.error(error);
+    renderEmptyFeedback();
+  });
+}
+
+// ===== NOTES =====
+document.getElementById("saveNotesBtn").addEventListener("click", () => {
+  localStorage.setItem("adminNotes", adminNotes.value.trim());
+  prependActivity("Updated admin notes", Date.now());
+  formatSavedMessage(document.getElementById("notesStatus"), "Notes saved.");
+});
+
+document.getElementById("clearNotesBtn").addEventListener("click", () => {
+  adminNotes.value = "";
+  localStorage.removeItem("adminNotes");
+  prependActivity("Cleared admin notes", Date.now());
+  formatSavedMessage(document.getElementById("notesStatus"), "Notes cleared.");
+});
+
+function loadNotes() {
+  adminNotes.value = localStorage.getItem("adminNotes") || "";
+}
+
+// ===== ANALYTICS CHARTS =====
+let pageChart = null;
+let categoryChart = null;
+
+function initCharts() {
+  // Page Visit Chart (Doughnut)
+  const pageCtx = document.getElementById("pageVisitChart").getContext("2d");
+  const pages = ["home", "tourist", "jeepterminal"];
+  const pageData = pages.map(p => parseInt(localStorage.getItem("click_" + p) || "0", 10));
+  const total = pageData.reduce((a,b) => a+b, 0) || 1;
+  pageChart = new Chart(pageCtx, {
+    type: "doughnut",
+    data: {
+      labels: ["Home", "Tourist Spots", "Terminals"],
+      datasets: [{
+        data: pageData.map(d => Math.max(d, 1)),
+        backgroundColor: ["#3b82f6", "#22c55e", "#f59e0b"],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: "bottom", labels: { color: "#94a3b8", padding: 16, font: { size: 12 } } }
+      }
+    }
+  });
+
+  // Category Chart (Bar)
+  const catCtx = document.getElementById("categoryChart").getContext("2d");
+  const catCounts = { Nature: 0, Park: 0, Landmark: 0, Culture: 0 };
+  spotsData.forEach(s => s.categories.forEach(c => { if (catCounts[c] !== undefined) catCounts[c]++; }));
+  categoryChart = new Chart(catCtx, {
+    type: "bar",
+    data: {
+      labels: Object.keys(catCounts),
+      datasets: [{
+        label: "Spots per Category",
+        data: Object.values(catCounts),
+        backgroundColor: ["#22c55e", "#3b82f6", "#f59e0b", "#8b5cf6"],
+        borderRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1, color: "#94a3b8" }, grid: { color: "rgba(51,65,85,0.3)" } },
+        x: { ticks: { color: "#94a3b8" }, grid: { display: false } }
+      }
+    }
+  });
+}
+
+function updateAnalyticsStats() {
+  document.getElementById("analyticsTotalVisits").textContent = localStorage.getItem("visitCount") || "0";
+  document.getElementById("analyticsPageViews").textContent = getTotalPageVisits();
+  const fbCount = parseInt(statFeedback.textContent) || 0;
+  const visits = parseInt(document.getElementById("analyticsTotalVisits").textContent) || 1;
+  document.getElementById("analyticsFeedbackRate").textContent = ((fbCount / visits) * 100).toFixed(1) + "%";
+  document.getElementById("analyticsActivePages").textContent = ["home", "tourist", "jeepterminal", "admin"].filter(page => parseInt(localStorage.getItem(`click_${page}`) || "0", 10) > 0).length;
+}
+
+document.getElementById("refreshAnalyticsBtn").addEventListener("click", () => {
+  updateAnalyticsStats();
+  if (pageChart) {
+    const pages = ["home", "tourist", "jeepterminal", "admin"];
+    const pageData = pages.map(p => parseInt(localStorage.getItem("click_" + p) || "0", 10));
+    pageChart.data.datasets[0].data = pageData.map(d => Math.max(d, 1));
+    pageChart.update();
+  }
+  if (categoryChart) {
+    const catCounts = { Nature: 0, Park: 0, Landmark: 0, Culture: 0 };
+    spotsData.forEach(s => s.categories.forEach(c => { if (catCounts[c] !== undefined) catCounts[c]++; }));
+    categoryChart.data.datasets[0].data = Object.values(catCounts);
+    categoryChart.update();
+  }
+  prependActivity("Refreshed analytics data", Date.now());
+});
+
+// ===== SETTINGS =====
+document.getElementById("settingsAdminEmail").value = localStorage.getItem("adminEmail") || "Not logged in";
+const savedLastLogin = localStorage.getItem("adminLastLogin");
+document.getElementById("settingsLastLogin").value = savedLastLogin ? new Date(parseInt(savedLastLogin,10)).toLocaleString() : "N/A";
+
+function updateStorageUsed() {
+  let total = 0;
+  for (let key in localStorage) {
+    if (localStorage.hasOwnProperty(key)) {
+      total += localStorage[key].length * 2; // approximate UTF-16
+    }
+  }
+  const kb = (total / 1024).toFixed(1);
+  document.getElementById("settingsStorageUsed").value = kb + " KB";
+}
+updateStorageUsed();
+
+document.getElementById("clearAllDataBtn").addEventListener("click", () => {
+  if (!confirm("⚠️ This will clear ALL local data. Continue?")) return;
+  if (!confirm("Are you absolutely sure?")) return;
+  const keep = ["isAdminLoggedIn", "adminEmail", "adminLastLogin", "adminToken"];
+  const keys = Object.keys(localStorage);
+  keys.forEach(k => {
+    if (!keep.includes(k)) localStorage.removeItem(k);
+  });
+  formatSavedMessage(document.getElementById("settingsStatus"), "Local data cleared (except login).");
+  window.location.reload();
+});
+
+// ===== NAVIGATION =====
+document.querySelectorAll(".admin-nav-item").forEach(item => {
+  item.addEventListener("click", () => {
+    document.querySelectorAll(".admin-nav-item").forEach(n => n.classList.remove("active"));
+    item.classList.add("active");
+    document.querySelectorAll(".admin-page").forEach(p => p.classList.remove("active"));
+    const page = item.getAttribute("data-page");
+    document.getElementById("page-" + page).classList.add("active");
+    const pageNames = {
+      dashboard: "Dashboard", spots: "Tourist Spots", announcements: "Announcements",
+      feedback: "Feedback", analytics: "Analytics", activity: "Activity Log", settings: "Settings"
+    };
+    document.getElementById("pageTitle").textContent = pageNames[page] || "Dashboard";
+    if (page === "analytics") {
+      updateAnalyticsStats();
+      if (!pageChart || !categoryChart) initCharts();
+    }
+    if (page === "activity") rebuildFullActivityLog();
+  });
+});
+
+document.getElementById("toggleSidebar").addEventListener("click", () => {
+  document.getElementById("adminSidebar").classList.toggle("open");
+});
+
+// ===== AUTH & INIT =====
+function saveLastLogin(email) {
+  const now = Date.now();
+  const sessionId = sessionStorage.getItem("adminSessionId");
+  if (!sessionId) {
+    sessionStorage.setItem("adminSessionId", "logged_in_" + now);
+    localStorage.setItem("adminLastLogin", now);
+    lastLoginDisplay.textContent = "Last login: " + new Date(now).toLocaleString();
+    prependActivity(`Admin login: ${email}`, now);
+  } else {
+    localStorage.setItem("adminLastLogin", now);
+    lastLoginDisplay.textContent = "Last login: " + new Date(now).toLocaleString();
+  }
+}
+
+const forceLogout = async () => {
+  localStorage.removeItem("isAdminLoggedIn");
+  localStorage.removeItem("adminEmail");
+  try { await signOut(auth); } catch(e) {}
+  window.location.href = "adminlogin.html";
+};
+
+document.getElementById("adminLogoutBtn").addEventListener("click", forceLogout);
+
+document.getElementById("refreshStatsBtn").addEventListener("click", () => {
+  updateDashboardStats();
+  prependActivity("Dashboard stats refreshed", Date.now());
+});
+
+document.getElementById("clearActivityBtn").addEventListener("click", () => {
+  if (!confirm("Clear all activity log?")) return;
+  recentActivityList.innerHTML = "";
+  renderActivityPlaceholder();
+  rebuildFullActivityLog();
+  prependActivity("Activity log cleared", Date.now());
+});
+
+onAuthStateChanged(auth, (user) => {
+  const signedInEmail = user?.email?.toLowerCase() || "";
+  if (!user || !ADMIN_ALLOWLIST.includes(signedInEmail)) {
+    authStatusDisplay.textContent = "Blocked";
+    forceLogout();
+    return;
+  }
+  localStorage.setItem("isAdminLoggedIn", "true");
+  localStorage.setItem("adminEmail", signedInEmail);
+  adminEmailDisplay.textContent = signedInEmail;
+  authStatusDisplay.textContent = "Connected";
+  document.getElementById("settingsAdminEmail").value = signedInEmail;
+  saveLastLogin(signedInEmail);
+  startFeedbackListener();
+});
+
+// ===== PAGE INIT =====
+trackPageViewAndDailyVisitors();
+loadSpots();
+loadAnnouncements();
+loadNotes();
+renderActivityPlaceholder();
+updateDashboardStats();
+updateAnalyticsStats();
+setTimeout(initCharts, 500);
+
+const savedLoginDisp = localStorage.getItem("adminLastLogin");
+if (savedLoginDisp) {
+  lastLoginDisplay.textContent = "Last login: " + new Date(parseInt(savedLoginDisp,10)).toLocaleString();
+}
+</script>
+</body>
+</html>
